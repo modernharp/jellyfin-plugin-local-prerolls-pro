@@ -1,0 +1,50 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Before you start: open **Dashboard → Plugins → Local Pre-Rolls Pro → Test**, test the title, and paste what it says below. It usually shows the reason.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: test
+    attributes:
+      label: Test tab result
+      description: Paste the result of the Test tab for the title (if it's about which pre-roll plays).
+  - type: input
+    id: jellyfin
+    attributes:
+      label: Jellyfin version
+      placeholder: e.g. 12.4
+    validations:
+      required: true
+  - type: input
+    id: plugin
+    attributes:
+      label: Plugin version
+      placeholder: e.g. 1.0.0.0 (Dashboard → Plugins)
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: App or browser used to play
+      placeholder: e.g. Jellyfin Web in Firefox, Android TV app, Jellyfin Media Player
+  - type: dropdown
+    id: install
+    attributes:
+      label: How is Jellyfin installed?
+      options: [Docker, Linux package, Windows, macOS, Other]
+  - type: textarea
+    id: logs
+    attributes:
+      label: Server log lines
+      description: Dashboard → Logs. Lines that mention LocalPrerollsPro around the time of the problem.
+      render: text
