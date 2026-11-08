@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: monthly
+    ignore:
+      # Jellyfin packages must match the Jellyfin version the plugin targets; update them by hand.
+      - dependency-name: "Jellyfin.*"
