@@ -1,0 +1,85 @@
+# Runs when you publish a release on GitHub (tag like v1.0.0).
+# It tests and builds the plugin, attaches the zip to the release, writes the release notes
+# if you left them empty, and adds the new version to manifest.json so Jellyfin offers the update.
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to (re)build, e.g. v1.0.0
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      REPO: ${{ github.repository }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Work out the plugin version from the tag
+        id: version
+        run: echo "version=$(python3 scripts/version.py "$TAG")" >> "$GITHUB_OUTPUT"
+
+      - name: Run unit tests
+        run: dotnet test -c Release
+
+      - name: Build the plugin zip
+        run: bash scripts/package.sh "${{ steps.version.outputs.version }}"
+
+      - name: Attach the zip to the release
+        run: |
+          gh release upload "$TAG" \
+            "dist/local-prerolls-pro_${{ steps.version.outputs.version }}.zip" \
+            dist/local-prerolls-pro.zip --clobber --repo "$REPO"
+
+      - name: Write the release notes if they are empty
+        run: |
+          body="$(gh release view "$TAG" --repo "$REPO" --json body --jq .body)"
+          if [ -z "${body//[[:space:]]/}" ]; then
+            python3 scripts/release_notes.py "${{ steps.version.outputs.version }}" "$REPO" "$TAG" > notes.md
+            gh release edit "$TAG" --repo "$REPO" --notes-file notes.md
+          fi
+
+      - name: Add the version to manifest.json
+        run: |
+          branch="${DEFAULT_BRANCH:-main}"
+          version="${{ steps.version.outputs.version }}"
+          checksum="$(cat "dist/local-prerolls-pro_$version.zip.md5")"
+          git fetch origin "$branch"
+          git checkout -B "$branch" "origin/$branch"
+          python3 scripts/update_manifest.py \
+            --version "$version" \
+            --url "https://github.com/$REPO/releases/download/$TAG/local-prerolls-pro_$version.zip" \
+            --checksum "$checksum" \
+            --repo "$REPO" \
+            --branch "$branch"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          if git diff --cached --quiet; then
+            echo "manifest.json already up to date"
+          else
+            git commit -m "Add version $version to the plugin repository"
+            git push origin "$branch"
+          fi
