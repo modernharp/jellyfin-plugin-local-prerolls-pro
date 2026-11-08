@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "guid": "d18a3ff6-9bbb-4218-9158-c9d2642eee86",
+    "versions": [
+      {
+        "version": "1.0.0.0",
+        "changelog": "First release.\n\n- Pre-rolls from your own folders (with subfolders), scanned automatically\n- Rules by genre, tag, studio, person, rating, library, collection, series, viewer, content type, resolution, HDR / Dolby Vision, audio format, date (yearly or one-off), release date and year, weekday, time of day and day of month\n- Pre-show builder: rule picks, fixed bumpers and local trailers of unwatched movies\n- Per-title pre-rolls from a `.prerolls` folder, a no-pre-roll list and a `no-preroll` tag\n- Age-safe selection, new pre-roll boost, no-repeat, cooldowns and binge detection\n- Per-file settings on the settings page or in sidecar JSON files\n- Automatic H.264/AAC copies of files apps can't play, loudness measurement and optional volume matching\n- Built-in prerolls.me catalog with thumbnails, previews, one-click downloads, auto-tagging and subscriptions\n- Test tab that explains exactly what plays and why\n- Help tab, full input validation, backup/restore and import from Local Intros",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/modernharp/jellyfin-plugin-local-prerolls-pro/releases/download/v1.0.0/local-prerolls-pro_1.0.0.0.zip",
+        "checksum": "5f00c8e295ec541ea179d75f65cb9253",
+        "timestamp": "2026-11-08T13:34:29Z"
+      }
+    ],
+    "name": "Local Pre-Rolls Pro",
+    "description": "Plays pre-roll videos before movies and episodes. Rules by genre, rating, resolution, HDR, audio, date, viewer and more; per-title pre-rolls; age-safe selection; automatic conversion and loudness levelling; and a built-in prerolls.me catalog with subscriptions.",
+    "overview": "Cinema-style pre-rolls from your own folders and prerolls.me, chosen by rules",
+    "owner": "modernharp",
+    "category": "General",
+    "imageUrl": "https://raw.githubusercontent.com/modernharp/jellyfin-plugin-local-prerolls-pro/main/images/logo.png"
+  }
+]
