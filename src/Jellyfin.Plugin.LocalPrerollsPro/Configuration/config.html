@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Local Pre-Rolls Pro</title>
+</head>
+<body>
+<div id="PrerollsProPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
+<style>
+    #PrerollsProPage .li-tabs { display: flex; flex-wrap: wrap; gap: .4em; margin: 1em 0 1em; }
+    #PrerollsProPage .li-tab { background: rgba(128,128,128,.15); border: 0; color: inherit; padding: .6em 1.1em; border-radius: 2em; cursor: pointer; font: inherit; }
+    #PrerollsProPage .li-tab.active { background: #00a4dc; color: #fff; }
+    #PrerollsProPage .li-tab .li-dot { display: inline-block; width: .5em; height: .5em; border-radius: 50%; background: #e05555; margin-left: .4em; vertical-align: middle; }
+    #PrerollsProPage .li-panel { display: none; }
+    #PrerollsProPage .li-panel.active { display: block; }
+    #PrerollsProPage .li-card { background: rgba(128,128,128,.08); border: 1px solid rgba(128,128,128,.25); border-radius: .5em; padding: 1em 1.2em; margin: 0 0 1em; }
+    #PrerollsProPage .li-banner { border-left: 4px solid #e8a33d; }
+    #PrerollsProPage .li-errorbox { border-left: 4px solid #e05555; }
+    #PrerollsProPage .li-unsaved { border-left: 4px solid #e8a33d; display: flex; flex-wrap: wrap; align-items: center; gap: .6em; padding: .6em 1em; }
+    #PrerollsProPage .li-row { display: flex; flex-wrap: wrap; gap: .8em; align-items: flex-start; }
+    #PrerollsProPage .li-row > label, #PrerollsProPage .li-field { display: flex; flex-direction: column; gap: .3em; min-width: 9em; flex: 1; }
+    #PrerollsProPage .li-row > label.li-inline, #PrerollsProPage label.li-check { flex-direction: row; align-items: center; min-width: 0; flex: 0 0 auto; display: inline-flex; }
+    #PrerollsProPage .li-hint { opacity: .7; font-size: .88em; }
+    #PrerollsProPage input, #PrerollsProPage select, #PrerollsProPage textarea { font: inherit; color: inherit; background: rgba(128,128,128,.12); border: 1px solid rgba(128,128,128,.35); border-radius: .3em; padding: .45em .55em; box-sizing: border-box; max-width: 100%; }
+    #PrerollsProPage .li-invalid { border-color: #e05555 !important; box-shadow: 0 0 0 1px #e05555; }
+    #PrerollsProPage .li-fielderror { color: #e05555; font-size: .9em; }
+    #PrerollsProPage select option { color: #000; }
+    #PrerollsProPage input[type=checkbox] { width: auto; padding: 0; margin-right: .45em; }
+    #PrerollsProPage textarea { width: 100%; min-height: 5em; font-family: monospace; }
+    #PrerollsProPage .li-btn { font: inherit; cursor: pointer; border: 0; border-radius: .3em; padding: .5em 1em; background: rgba(128,128,128,.25); color: inherit; text-decoration: none; display: inline-block; }
+    #PrerollsProPage .li-btn.primary { background: #00a4dc; color: #fff; }
+    #PrerollsProPage .li-btn.danger { background: rgba(204,51,51,.8); color: #fff; }
+    #PrerollsProPage .li-btn.small { padding: .25em .6em; font-size: .9em; }
+    #PrerollsProPage .li-btn:disabled { opacity: .5; cursor: default; }
+    #PrerollsProPage .li-link { background: none; border: 0; color: #00a4dc; cursor: pointer; font: inherit; padding: 0; text-decoration: underline; }
+    #PrerollsProPage .li-actions { display: flex; flex-wrap: wrap; gap: .5em; margin: .8em 0; align-items: center; }
+    #PrerollsProPage .li-table { width: 100%; border-collapse: collapse; }
+    #PrerollsProPage .li-table th, #PrerollsProPage .li-table td { text-align: left; padding: .45em .5em; border-bottom: 1px solid rgba(128,128,128,.2); vertical-align: top; }
+    #PrerollsProPage .li-table th { font-weight: 600; opacity: .8; }
+    #PrerollsProPage .li-scroll { overflow-x: auto; }
+    #PrerollsProPage .li-muted { opacity: .7; font-size: .92em; }
+    #PrerollsProPage .li-warn { color: #e8a33d; }
+    #PrerollsProPage .li-info { color: #6db3d6; }
+    #PrerollsProPage .li-bad { color: #e05555; }
+    #PrerollsProPage .li-good { color: #4caf50; }
+    #PrerollsProPage .li-chips { display: flex; flex-wrap: wrap; gap: .35em; margin: .3em 0; }
+    #PrerollsProPage .li-chip { background: rgba(0,164,220,.25); border-radius: 1em; padding: .15em .3em .15em .7em; display: inline-flex; align-items: center; gap: .3em; }
+    #PrerollsProPage .li-chip.plain { padding: .1em .6em; font-size: .85em; }
+    #PrerollsProPage .li-chip button { border: 0; background: none; color: inherit; cursor: pointer; font-size: 1.1em; line-height: 1; }
+    #PrerollsProPage .li-badge { font-size: .75em; padding: .1em .5em; border-radius: .3em; background: #4caf50; color: #fff; margin-left: .4em; vertical-align: middle; }
+    #PrerollsProPage .li-badge.grey { background: rgba(128,128,128,.5); }
+    #PrerollsProPage .li-checks { display: flex; flex-wrap: wrap; gap: .3em 1.2em; }
+    #PrerollsProPage .li-checks label { display: inline-flex; align-items: center; }
+    #PrerollsProPage .li-pick { max-height: 14em; overflow-y: auto; border: 1px solid rgba(128,128,128,.25); border-radius: .3em; padding: .5em; }
+    #PrerollsProPage .li-pick label { display: flex; align-items: center; padding: .15em 0; }
+    #PrerollsProPage .li-pick .li-pickhead { font-size: .8em; text-transform: uppercase; opacity: .6; margin: .4em 0 .1em; }
+    #PrerollsProPage .li-cond { border-left: 3px solid #00a4dc; padding: .5em .8em; margin: .6em 0; background: rgba(128,128,128,.06); }
+    #PrerollsProPage .li-savebar { padding: .8em 0; display: flex; gap: 1em; align-items: center; }
+    #PrerollsProPage .li-dirty { color: #e8a33d; }
+    #PrerollsProPage .li-off { opacity: .5; }
+    #PrerollsProPage h3 { margin: .2em 0 .6em; }
+    #PrerollsProPage details > summary { cursor: pointer; margin: .6em 0; opacity: .85; }
+    #PrerollsProPage video { max-width: 100%; max-height: 16em; background: #000; display: block; margin-top: .5em; }
+    #PrerollsProPage .li-help { margin: .3em 0 0; }
+    #PrerollsProPage .li-folderchecks div { font-size: .9em; margin: .15em 0; }
+    #PrerollsProPage .li-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15em, 1fr)); gap: .8em; }
+    #PrerollsProPage .li-tile { background: rgba(128,128,128,.08); border: 1px solid rgba(128,128,128,.25); border-radius: .5em; overflow: hidden; display: flex; flex-direction: column; }
+    #PrerollsProPage .li-tile .li-thumb { aspect-ratio: 16/9; background: #111 center/cover no-repeat; position: relative; }
+    #PrerollsProPage .li-tile .li-thumb span { position: absolute; right: .4em; bottom: .4em; background: rgba(0,0,0,.7); color: #fff; font-size: .8em; padding: .05em .4em; border-radius: .2em; }
+    #PrerollsProPage .li-tile .li-body { padding: .6em .7em; display: flex; flex-direction: column; gap: .3em; flex: 1; }
+    #PrerollsProPage .li-tile .li-body .li-actions { margin: auto 0 0; }
+    #PrerollsProPage .li-tile video { max-height: none; margin: 0; }
+    #PrerollsProPage .li-helpdoc h3 { margin-top: 1.2em; }
+    #PrerollsProPage .li-helpdoc details { border-bottom: 1px solid rgba(128,128,128,.2); padding: .3em 0; }
+    #PrerollsProPage .li-helpdoc details > summary { font-weight: 600; opacity: 1; }
+    #PrerollsProPage .li-helpdoc p, #PrerollsProPage .li-helpdoc li { line-height: 1.5; }
+    #PrerollsProPage .li-helpdoc pre { background: rgba(128,128,128,.12); padding: .6em; border-radius: .3em; overflow-x: auto; }
+</style>
+<div data-role="content">
+<div class="content-primary">
+    <h2 class="sectionTitle">Local Pre-Rolls Pro</h2>
+    <p class="li-muted">Plays pre-roll videos from your folders before movies and episodes. Pre-rolls only play when <b>Cinema mode</b> is on in the app's playback settings, and not when resuming a video. New here? Open <button type="button" class="li-link" data-goto="help">Help</button>.</p>
+    <div id="liBanner"></div>
+
+    <div class="li-tabs" id="liTabs" role="tablist">
+        <button type="button" class="li-tab active" data-tab="files">Files</button>
+        <button type="button" class="li-tab" data-tab="rules">Rules</button>
+        <button type="button" class="li-tab" data-tab="preshow">Pre-show</button>
+        <button type="button" class="li-tab" data-tab="playback">Playback</button>
+        <button type="button" class="li-tab" data-tab="catalog">Catalog</button>
+        <button type="button" class="li-tab" data-tab="test">Test</button>
+        <button type="button" class="li-tab" data-tab="backup">Backup</button>
+        <button type="button" class="li-tab" data-tab="help">Help</button>
+    </div>
+
+    <div id="liUnsaved" class="li-card li-unsaved" style="display:none">
+        <span>You have unsaved changes.</span>
+        <button type="button" class="li-btn primary small" data-save>Save</button>
+        <button type="button" class="li-btn small" id="liDiscard">Discard changes</button>
+    </div>
+    <div id="liErrors"></div>
+
+    <!-- FILES -->
+    <div class="li-panel active" data-panel="files">
+        <div class="li-card">
+            <h3>Pre-roll folders</h3>
+            <label class="li-field" for="liFolders">One folder per line, written as the Jellyfin server sees it. With Docker, use the path inside the container.</label>
+            <textarea id="liFolders" placeholder="/media/prerolls"></textarea>
+            <div id="liFolderChecks" class="li-folderchecks"></div>
+            <div class="li-row" style="margin-top:.6em">
+                <label class="li-check"><input type="checkbox" id="liSubfolders" />Include subfolders</label>
+                <label>Video file types
+                    <input id="liExtensions" type="text" />
+                    <span class="li-hint">Separate with commas, e.g. .mp4, .mkv. Other files (images, .nfo, subtitles) are always ignored.</span>
+                </label>
+            </div>
+            <div class="li-actions">
+                <button type="button" class="li-btn primary" id="liScanBtn">Save and scan</button>
+                <button type="button" class="li-btn" id="liPrepareBtn" title="Checks every pre-roll again for codecs and loudness.">Re-check files</button>
+                <button type="button" class="li-btn" id="liRebuildBtn" title="Only needed if pre-rolls stop playing after a database problem.">Repair library items</button>
+            </div>
+            <div id="liScanStatus" class="li-muted"></div>
+        </div>
+        <div class="li-card">
+            <div class="li-row" style="justify-content:space-between;align-items:center">
+                <h3 id="liFilesTitle">Pre-rolls</h3>
+                <button type="button" class="li-btn small" id="liResetStats">Reset play counts</button>
+            </div>
+            <p class="li-muted li-help">Click <b>Edit</b> to give a pre-roll tags, a rating, a weight or dates. Subfolders and tags let rules pick groups of pre-rolls, such as every pre-roll tagged "christmas".</p>
+            <div class="li-scroll"><table class="li-table">
+                <thead><tr><th>Pre-roll</th><th>Length</th><th>Video / audio</th><th>Loudness</th><th>Plays</th><th></th></tr></thead>
+                <tbody id="liFilesBody"></tbody>
+            </table></div>
+        </div>
+    </div>
+
+    <!-- RULES -->
+    <div class="li-panel" data-panel="rules">
+        <div class="li-card">
+            <p class="li-muted li-help">Rules decide which pre-roll plays. When a title starts, every rule whose conditions match is a candidate. Of those, only the rules with the <b>highest priority</b> are used, and <b>weight</b> sets how often each of their pre-rolls is picked. A rule with no conditions always matches, so keep a catch-all rule at priority 0.</p>
+            <div class="li-actions">
+                <button type="button" class="li-btn primary" id="liAddRule">Add rule</button>
+                <select id="liPreset" aria-label="Add a holiday rule">
+                    <option value="">Add a holiday rule…</option>
+                    <option value="Halloween|10-15|10-31">Halloween (Oct 15–31)</option>
+                    <option value="Christmas|12-01|12-26">Christmas (Dec 1–26)</option>
+                    <option value="New Year|12-31|01-01">New Year (Dec 31–Jan 1)</option>
+                    <option value="Valentine's Day|02-14|02-14">Valentine's Day (Feb 14)</option>
+                    <option value="Easter season|03-20|04-25">Easter season (Mar 20–Apr 25)</option>
+                    <option value="Independence Day|07-04|07-04">July 4th</option>
+                    <option value="Summer|06-21|09-22">Summer (Jun 21–Sep 22)</option>
+                    <option value="Winter|12-21|03-19">Winter (Dec 21–Mar 19)</option>
+                </select>
+            </div>
+            <div id="liRuleEditor"></div>
+            <div class="li-scroll"><table class="li-table">
+                <thead><tr><th>On</th><th>Rule</th><th>When</th><th>Pre-rolls</th><th>Priority</th><th>Weight</th><th></th></tr></thead>
+                <tbody id="liRulesBody"></tbody>
+            </table></div>
+        </div>
+    </div>
+
+    <!-- PRE-SHOW -->
+    <div class="li-panel" data-panel="preshow">
+        <div class="li-card">
+            <p class="li-muted li-help">The pre-show is everything that plays before the title, in this order. <b>Rule picks</b> are chosen by your rules. <b>Fixed pre-rolls</b> play every time, for example a "feature presentation" bumper. <b>Trailers</b> are local trailers of movies the viewer hasn't watched yet.</p>
+            <div id="liSteps"></div>
+            <div class="li-actions">
+                <button type="button" class="li-btn" data-addstep="Rules">+ Rule picks</button>
+                <button type="button" class="li-btn" data-addstep="Fixed">+ Fixed pre-rolls</button>
+                <button type="button" class="li-btn" data-addstep="Trailers">+ Trailers</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PLAYBACK -->
+    <div class="li-panel" data-panel="playback">
+        <div class="li-card">
+            <h3>Play pre-rolls before</h3>
+            <div class="li-checks" id="liItemTypes"></div>
+        </div>
+        <div class="li-card">
+            <h3>Choosing pre-rolls</h3>
+            <div class="li-row">
+                <label>Selection
+                    <select id="liSelectionMode">
+                        <option value="WeightedRandom">Random (uses weights)</option>
+                        <option value="LeastPlayed">Least played first</option>
+                        <option value="Sequential">In order, one after another</option>
+                    </select>
+                </label>
+                <label>Avoid repeats
+                    <input type="number" id="liAvoidRepeat" data-field="AvoidRepeatCount" data-min="0" data-max="25" data-label="Avoid repeats" min="0" max="25" step="1" />
+                    <span class="li-hint">Skip the last this-many pre-rolls a viewer saw (0–25). 0 = off.</span>
+                </label>
+            </div>
+            <div class="li-row" style="margin-top:.6em">
+                <label>Boost new pre-rolls for (days)
+                    <input type="number" id="liBoostDays" data-field="BoostNewDays" data-min="0" data-max="365" data-label="Boost days" min="0" max="365" step="1" />
+                    <span class="li-hint">0–365. 0 = off.</span>
+                </label>
+                <label>…and play them this many times as often
+                    <input type="number" id="liBoostFactor" data-field="BoostNewFactor" data-min="1" data-max="10" data-decimal="1" data-label="Boost amount" min="1" max="10" step="0.5" />
+                    <span class="li-hint">1–10. 2 = twice as often.</span>
+                </label>
+            </div>
+        </div>
+        <div class="li-card">
+            <h3>Age-safe pre-rolls</h3>
+            <label class="li-check"><input type="checkbox" id="liAgeSafe" />Never play a pre-roll rated higher than the title</label>
+            <p class="li-hint">Give a pre-roll a rating with <b>Edit</b> on the Files tab. Pre-rolls without a rating count as suitable for everyone.</p>
+            <div class="li-row" style="margin-top:.6em">
+                <label>For titles that have no rating
+                    <select id="liAgeUnrated">
+                        <option value="false">Only play pre-rolls without a rating</option>
+                        <option value="true">Play any pre-roll</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+        <div class="li-card">
+            <h3>Per-title pre-rolls</h3>
+            <p class="li-muted li-help">Put videos in a folder with this name inside a movie's folder, a series folder or a season folder, and they play only for that title. A name that starts with a dot keeps Jellyfin from listing those videos as content.</p>
+            <div class="li-row">
+                <label class="li-inline"><input type="checkbox" id="liTitleEnabled" />On</label>
+                <label>Folder name
+                    <input type="text" id="liTitleFolder" maxlength="100" />
+                    <span class="li-hint">Just a name, such as .prerolls. No slashes.</span>
+                </label>
+                <label>Use them
+                    <select id="liTitleMode">
+                        <option value="Replace">Instead of rule picks</option>
+                        <option value="AddFirst">First, then the normal pre-show</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+        <div class="li-card">
+            <h3>Titles that never get pre-rolls</h3>
+            <div class="li-chips" id="liOptOutChips"></div>
+            <div class="li-row">
+                <label>Find a movie, series or episode<input type="search" id="liOptOutSearch" placeholder="Type at least 2 letters…" /></label>
+                <label>Then pick it to add it<select id="liOptOutResults"><option value="">Search first</option></select></label>
+            </div>
+            <div class="li-row" style="margin-top:.6em">
+                <label>Also skip any title with this tag
+                    <input type="text" id="liOptOutTag" maxlength="100" placeholder="no-preroll" />
+                    <span class="li-hint">Add the tag to a movie or series in Jellyfin's metadata editor. Leave empty to turn this off.</span>
+                </label>
+            </div>
+        </div>
+        <div class="li-card">
+            <h3>How often</h3>
+            <div class="li-row">
+                <label>Minutes between pre-shows, per viewer
+                    <input type="number" id="liMinMinutes" data-field="MinMinutesBetweenIntros" data-min="0" data-max="10080" data-label="Minutes between pre-shows" min="0" max="10080" step="1" />
+                    <span class="li-hint">0 = before every title. 120 = at most one pre-show every 2 hours.</span>
+                </label>
+                <label>TV episodes
+                    <select id="liEpisodeMode">
+                        <option value="EveryEpisode">Every episode</option>
+                        <option value="FirstOfBinge">Only the first episode of a binge</option>
+                        <option value="OncePerSeriesPerDay">Once per series per day</option>
+                    </select>
+                </label>
+                <label id="liBingeGapWrap">A new binge starts after a break of (minutes)
+                    <input type="number" id="liBingeGap" data-field="BingeGapMinutes" data-min="1" data-max="1440" data-label="Binge break" min="1" max="1440" step="1" />
+                    <span class="li-hint">1–1440.</span>
+                </label>
+            </div>
+        </div>
+        <div class="li-card">
+            <h3>Compatibility and volume</h3>
+            <label class="li-check"><input type="checkbox" id="liConvert" />Make compatible copies of pre-rolls that some apps can't play directly</label>
+            <p class="li-hint">For HEVC, AC3, HDR, 10-bit or AVI files the plugin makes an H.264/AAC MP4 copy in the background and plays that. It prevents most "stuck after the pre-roll" problems.</p>
+            <label class="li-check" style="margin-top:.5em"><input type="checkbox" id="liLevel" />Volume-match pre-rolls that are much louder or quieter than the target</label>
+            <div class="li-row" style="margin-top:.6em">
+                <label>Target loudness (LUFS)
+                    <input type="number" id="liTargetLufs" data-field="TargetLoudness" data-min="-36" data-max="-10" data-decimal="1" data-label="Target loudness" min="-36" max="-10" step="1" />
+                    <span class="li-hint">From -36 (quiet) to -10 (loud). -24 is about the level of movie dialogue.</span>
+                </label>
+            </div>
+        </div>
+        <div class="li-card">
+            <h3>Viewers who never get pre-rolls</h3>
+            <div class="li-checks" id="liExcludedUsers"></div>
+        </div>
+    </div>
+
+    <!-- CATALOG -->
+    <div class="li-panel" data-panel="catalog">
+        <div class="li-card">
+            <p class="li-muted li-help">Free pre-rolls from <a href="https://www.prerolls.me" target="_blank" rel="noopener">prerolls.me</a>, made by the community for personal media servers. Please keep the creator credit. Videos hosted by prerolls.me download straight into your pre-roll folder with their tags. Ones hosted on YouTube or Vimeo can only be opened on the website.</p>
+            <div class="li-row">
+                <label>Search<input type="search" id="liCatQ" placeholder="e.g. christmas, studio logo…" /></label>
+                <label>Made for<select id="liCatPlatform"><option value="">Any server</option><option value="jellyfin">Jellyfin</option><option value="plex">Plex</option><option value="emby">Emby</option></select></label>
+                <label>Category<select id="liCatCategory"><option value="">All categories</option></select></label>
+                <label>Tag<select id="liCatTag"><option value="">All tags</option></select></label>
+                <label>Sort<select id="liCatSort"><option value="popular">Most downloaded</option><option value="newest">Newest</option><option value="shortest">Shortest</option><option value="az">A–Z</option></select></label>
+            </div>
+            <div class="li-actions">
+                <label class="li-check"><input type="checkbox" id="liCatDownloadable" />Downloadable only</label>
+                <span id="liCatInfo" class="li-muted" aria-live="polite"></span>
+            </div>
+            <div id="liCatGrid" class="li-grid"></div>
+            <div class="li-actions" id="liCatPager"></div>
+        </div>
+        <div class="li-card">
+            <h3>Subscriptions</h3>
+            <p class="li-muted li-help">Follow a category or tag and new hosted pre-rolls download automatically. The plugin checks about once an hour and downloads at most 20 per check. Pre-rolls you delete are not downloaded again.</p>
+            <div id="liSubs"></div>
+            <div class="li-row">
+                <label>Follow a<select id="liSubKind"><option value="category">Category</option><option value="tag">Tag</option></select></label>
+                <label>Which one<select id="liSubValue"><option value="">Open this tab to load the list…</option></select></label>
+                <label>Made for<select id="liSubPlatform"><option value="">Any server</option><option value="jellyfin">Jellyfin</option><option value="plex">Plex</option><option value="emby">Emby</option></select></label>
+                <label class="li-inline"><button type="button" class="li-btn" id="liSubAdd">Follow</button></label>
+            </div>
+            <div id="liSubError" class="li-fielderror"></div>
+            <div class="li-actions">
+                <label class="li-check"><input type="checkbox" id="liAutoSync" />Download new pre-rolls automatically</label>
+                <button type="button" class="li-btn" id="liSyncNow">Save and sync now</button>
+                <span id="liSyncStatus" class="li-muted" aria-live="polite"></span>
+            </div>
+        </div>
+        <div class="li-card">
+            <h3>Where downloads go</h3>
+            <div class="li-row">
+                <label>Download folder
+                    <input type="text" id="liCatFolder" placeholder="Empty = your first pre-roll folder" />
+                    <span class="li-hint">Must be inside one of your pre-roll folders, otherwise the downloads would never play.</span>
+                </label>
+                <label class="li-inline"><input type="checkbox" id="liCatPerCategory" />Subfolder per category</label>
+            </div>
+            <div id="liCatFolderInfo" class="li-muted li-help"></div>
+            <p id="liCatTraffic" class="li-hint"></p>
+        </div>
+    </div>
+
+    <!-- TEST -->
+    <div class="li-panel" data-panel="test">
+        <div class="li-card">
+            <p class="li-muted li-help">See what would play before a title, and why. The test uses the <b>saved</b> settings and doesn't count as a play.</p>
+            <div class="li-row">
+                <label>Find a movie or episode<input type="search" id="liTestSearch" placeholder="Type at least 2 letters…" /></label>
+                <label>Title<select id="liTestItem"><option value="">Search first</option></select></label>
+            </div>
+            <div class="li-row" style="margin-top:.6em">
+                <label>Viewer<select id="liTestUser"></select></label>
+                <label>Date and time<input type="datetime-local" id="liTestAt" /></label>
+                <label class="li-inline"><button type="button" class="li-btn primary" id="liTestRun">Run test</button></label>
+            </div>
+            <div id="liTestNote" class="li-warn li-help"></div>
+        </div>
+        <div id="liTestResult" aria-live="polite"></div>
+    </div>
+
+    <!-- BACKUP -->
+    <div class="li-panel" data-panel="backup">
+        <div class="li-card">
+            <h3>Import from Local Intros</h3>
+            <p class="li-muted li-help" id="liImportInfo">Checking for Local Intros settings…</p>
+            <button type="button" class="li-btn" id="liImportLocal" disabled>Import Local Intros settings</button>
+        </div>
+        <div class="li-card">
+            <h3>Export</h3>
+            <p class="li-muted li-help">Downloads all your settings as a file, so you can restore them later or copy them to another server. Unsaved changes are included.</p>
+            <button type="button" class="li-btn" id="liExport">Download settings</button>
+        </div>
+        <div class="li-card">
+            <h3>Restore</h3>
+            <p class="li-muted li-help">Choose a downloaded settings file, or paste its contents below. It replaces the settings on this page; click Save to keep them.</p>
+            <input type="file" id="liImportFile" accept=".json,application/json" />
+            <textarea id="liImportText" style="min-height:8em;margin-top:.5em" placeholder='{ "LocalPrerollsProExport": 1, … }'></textarea>
+            <div id="liRestoreError" class="li-fielderror"></div>
+            <div class="li-actions"><button type="button" class="li-btn" id="liImport">Restore</button></div>
+        </div>
+    </div>
+
+    <!-- HELP -->
+    <div class="li-panel" data-panel="help">
+        <div class="li-card li-helpdoc">
+            <h3>Getting started</h3>
+            <ol>
+                <li>Put your pre-roll videos in a folder the Jellyfin server can read. MP4 files with H.264 video and AAC audio work best.</li>
+                <li>On the <b>Files</b> tab, enter that folder and click <b>Save and scan</b>. Your pre-rolls are listed below it. You can also download some from the <b>Catalog</b> tab.</li>
+                <li>A rule called "All pre-rolls" already plays a random pre-roll before every movie and episode. Add more rules on the <b>Rules</b> tab when you want different pre-rolls for different titles, dates or viewers.</li>
+                <li>In your Jellyfin app, turn on <b>Cinema mode</b> (Settings → Playback). Play a movie from the start.</li>
+                <li>If nothing plays, open the <b>Test</b> tab, pick the movie, and it tells you why.</li>
+            </ol>
+
+            <h3>How a pre-roll is chosen</h3>
+            <ol>
+                <li><b>Should this title get a pre-show at all?</b> Not if it's on the no-pre-roll list or has the skip tag, its type is turned off, the viewer is excluded, the viewer had a pre-show recently, or the episode rule says no.</li>
+                <li><b>Which pre-rolls are allowed today?</b> Pre-rolls that are turned off, outside their dates, or rated above the title (with age-safe on) are left out.</li>
+                <li><b>The pre-show runs</b>, step by step. In a "Rule picks" step, matching rules with the highest priority win, and weight decides the odds between their pre-rolls. If the title has its own <code>.prerolls</code> folder, those pre-rolls are used instead.</li>
+            </ol>
+
+            <h3>Questions</h3>
+            <details><summary>Nothing plays before my movie</summary>
+                <ul>
+                    <li>Turn on <b>Cinema mode</b> in the app (Settings → Playback). It is a per-device setting.</li>
+                    <li>Pre-rolls never play when you resume a title, or for the second item onward in a play queue.</li>
+                    <li>Some apps only ask for pre-rolls before movies, not episodes.</li>
+                    <li>Open the <b>Test</b> tab and test the title. It shows exactly what stopped the pre-show.</li>
+                </ul>
+            </details>
+            <details><summary>The pre-roll plays, but the movie doesn't start, or there's a long pause</summary>
+                <p>This usually happens when the app has to transcode the pre-roll. Keep <b>Make compatible copies</b> on (Playback tab) and look for warnings on the Files tab. For the best results use MP4 files with H.264 video and AAC stereo audio.</p>
+            </details>
+            <details><summary>My folder shows "Not found on the server"</summary>
+                <p>Enter the folder exactly as the Jellyfin server sees it. With Docker that is the path <i>inside</i> the container (for example <code>/media/prerolls</code>), not the path on your computer. On Windows, use a full path such as <code>D:\Prerolls</code>. The Jellyfin user needs permission to read the folder.</p>
+            </details>
+            <details><summary>What do priority and weight mean?</summary>
+                <p><b>Priority</b>: when several rules match, only those with the highest priority are used. Example: "Christmas" at priority 10 beats the "All pre-rolls" rule at priority 0 during December.</p>
+                <p><b>Weight</b>: among the rules that are used, a pre-roll with weight 3 is picked three times as often as one with weight 1. You can also give single pre-rolls a weight with <b>Edit</b> on the Files tab.</p>
+            </details>
+            <details><summary>How do I set up holiday pre-rolls?</summary>
+                <p>Put them in a subfolder such as <code>christmas/</code>, or tag them "christmas" with Edit. On the Rules tab choose <b>Add a holiday rule → Christmas</b>, tick "Everything in christmas/" or the tag, and click Keep rule, then Save. Its priority (10) beats the catch-all rule only during those dates.</p>
+            </details>
+            <details><summary>Can a movie or show have its own pre-roll?</summary>
+                <p>Yes. Make a folder named <code>.prerolls</code> inside the movie's folder, the series folder, or a season folder, and put the videos in it. They play only for that title. Choose on the Playback tab whether they replace the rule picks or play first.</p>
+            </details>
+            <details><summary>How do I keep a title free of pre-rolls?</summary>
+                <p>Add it under <b>Titles that never get pre-rolls</b> on the Playback tab, or give it the tag <code>no-preroll</code> in Jellyfin's metadata editor. A series or season on the list covers all its episodes.</p>
+            </details>
+            <details><summary>How does age-safe work?</summary>
+                <p>Give a pre-roll a rating with Edit on the Files tab, for example R for a horror pre-roll. With age-safe on, it never plays before a title rated lower, such as PG or a kids' show. Pre-rolls without a rating play before anything. For titles without a rating, you choose on the Playback tab.</p>
+            </details>
+            <details><summary>Can I set pre-roll details in files instead of on this page?</summary>
+                <p>Yes. Next to <code>xmas.mp4</code> create <code>xmas.mp4.json</code> (or <code>xmas.json</code>):</p>
+                <pre>{ "name": "Christmas Bumper", "tags": ["christmas"], "rating": "G",
+  "weight": 2, "from": "12-01", "to": "12-26", "enabled": true }</pre>
+                <p>A <code>prerolls.json</code> in a folder sets defaults for every file in it:</p>
+                <pre>{ "defaults": { "tags": ["christmas"] },
+  "files": { "santa.mp4": { "rating": "G" } } }</pre>
+                <p>Dates are <code>MM-dd</code> to repeat every year, or <code>yyyy-MM-dd</code> for one year only. Settings made with Edit override the file. If a file has a mistake, the scan result on the Files tab names it.</p>
+            </details>
+            <details><summary>What do the loudness numbers mean?</summary>
+                <p>Loudness is measured in LUFS. Closer to 0 is louder. Movie dialogue is usually around -24. A pre-roll at -10 is much louder than your movie. Turn on <b>Volume-match</b> on the Playback tab and the plugin plays an adjusted copy instead. Your original file is never changed.</p>
+            </details>
+            <details><summary>Where are converted and volume-matched copies kept?</summary>
+                <p>In Jellyfin's cache folder, under <code>local-prerolls-pro</code>. They are made in the background after each scan and deleted automatically when the original is removed or the settings change. Originals are never modified.</p>
+            </details>
+            <details><summary>What does "Repair library items" do?</summary>
+                <p>Jellyfin can only stream files it knows about, so the plugin keeps a hidden library item for each pre-roll. Repair removes and recreates those items. Your files and settings are not touched. You only need it if pre-rolls stop playing after a database problem.</p>
+            </details>
+            <details><summary>How does the plugin treat prerolls.me?</summary>
+                <ul>
+                    <li>The catalog is downloaded at most once an hour and kept on your server. Searching and filtering never contact the website.</li>
+                    <li>Thumbnails are fetched once, at most four at a time, and kept on your server.</li>
+                    <li>Downloads happen one at a time. A subscription check downloads at most 20 pre-rolls and runs about once an hour.</li>
+                    <li>If the site can't be reached, the plugin waits 5 minutes before trying again.</li>
+                    <li>Each downloaded pre-roll keeps the creator credit and a link to its page. The clips are meant for personal media servers.</li>
+                </ul>
+            </details>
+            <details><summary>I used the Local Intros plugin before</summary>
+                <p>Open the <b>Backup</b> tab and click <b>Import Local Intros settings</b>. Then disable or uninstall Local Intros (Dashboard → Plugins), otherwise both plugins add pre-rolls.</p>
+            </details>
+            <details><summary>Episodes in a binge keep getting pre-rolls</summary>
+                <p>On the Playback tab, set TV episodes to "Only the first episode of a binge" or "Once per series per day". You can also set a number of minutes between pre-shows.</p>
+            </details>
+        </div>
+    </div>
+
+    <div class="li-savebar">
+        <button type="button" class="li-btn primary" data-save>Save</button>
+        <span id="liDirty" class="li-dirty" aria-live="polite"></span>
+    </div>
+</div>
+</div>
+
+<script type="text/javascript">
+(function () {
+    'use strict';
+    var PLUGIN_ID = 'd18a3ff6-9bbb-4218-9158-c9d2642eee86';
+    var API = 'LocalPrerollsPro/';
+    var page = document.getElementById('PrerollsProPage');
+    if (!page || page.dataset.liInit) { return; }
+    page.dataset.liInit = '1';
+
+    var ITEM_TYPES = [['Movie', 'Movies'], ['Episode', 'TV episodes'], ['MusicVideo', 'Music videos'], ['Video', 'Other videos']];
+    var KINDS = {
+        Genre: { label: 'Genre', type: 'list', source: 'genres', noun: 'a genre' },
+        Tag: { label: 'Tag', type: 'list', source: 'tags', noun: 'a tag' },
+        Studio: { label: 'Studio / network', type: 'list', source: 'studios', noun: 'a studio' },
+        Person: { label: 'Person (actor, director…)', type: 'list', source: null, noun: 'a person' },
+        OfficialRating: { label: 'Parental rating', type: 'list', source: 'ratings', noun: 'a rating' },
+        Library: { label: 'Library', type: 'idlist', source: 'libraries', noun: 'a library' },
+        Collection: { label: 'Collection', type: 'idlist', source: 'collections', noun: 'a collection' },
+        Series: { label: 'TV series', type: 'idlist', source: 'series', noun: 'a series' },
+        User: { label: 'Viewer', type: 'idlist', source: 'users', noun: 'a viewer' },
+        ItemType: { label: 'Content type', type: 'checks', options: ITEM_TYPES, noun: 'a content type' },
+        Resolution: { label: 'Resolution', type: 'checks', options: [['4K', '4K'], ['1080p', '1080p'], ['720p', '720p'], ['SD', 'SD']], noun: 'a resolution' },
+        VideoRange: { label: 'HDR / Dolby Vision', type: 'checks', options: [['SDR', 'SDR'], ['HDR', 'Any HDR'], ['HDR10', 'HDR10'], ['HDR10+', 'HDR10+'], ['HLG', 'HLG'], ['DolbyVision', 'Dolby Vision']], noun: 'a video range' },
+        AudioFormat: { label: 'Audio format', type: 'checks', options: [['Atmos', 'Dolby Atmos'], ['DTS:X', 'DTS:X'], ['TrueHD', 'TrueHD'], ['DTS-HD MA', 'DTS-HD MA'], ['DTS', 'DTS'], ['DD+', 'Dolby Digital+'], ['DD', 'Dolby Digital'], ['AAC', 'AAC'], ['FLAC', 'FLAC'], ['7.1', '7.1'], ['5.1', '5.1'], ['Stereo', 'Stereo']], noun: 'an audio format' },
+        DayOfWeek: { label: 'Day of the week', type: 'checks', options: [['Monday', 'Mon'], ['Tuesday', 'Tue'], ['Wednesday', 'Wed'], ['Thursday', 'Thu'], ['Friday', 'Fri'], ['Saturday', 'Sat'], ['Sunday', 'Sun']], noun: 'a day' },
+        CurrentDate: { label: "Today's date", type: 'date' },
+        PremiereDate: { label: 'Release date of the title', type: 'date' },
+        ProductionYear: { label: 'Release year of the title', type: 'range', input: 'number', min: 1870, max: 2200, unit: 'year', placeholder: ['e.g. 1980', 'e.g. 1989'] },
+        TimeOfDay: { label: 'Time of day', type: 'range', input: 'time', unit: 'time' },
+        DayOfMonth: { label: 'Day of the month', type: 'range', input: 'number', min: 1, max: 31, unit: 'day', placeholder: ['e.g. 1', 'e.g. 15'] }
+    };
+    var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    var STEP_LABELS = { Rules: 'Rule picks', Fixed: 'Fixed pre-rolls', Trailers: 'Trailers', Title: "Title's own pre-rolls" };
+    var TAB_NAMES = { files: 'Files', rules: 'Rules', preshow: 'Pre-show', playback: 'Playback', catalog: 'Catalog', test: 'Test', backup: 'Backup', help: 'Help' };
+
+    var config = null;
+    var files = [];
+    var folders = [];
+    var introTags = [];
+    var lists = { genres: [], tags: [], studios: [], ratings: [], libraries: [], collections: [], series: [], users: [] };
+    var catMeta = { categories: [], tags: [] };
+    var catPage = 1;
+    var editing = null; // { index, rule } while the rule editor is open
+    var editingFile = null; // key of the pre-roll being edited
+    var optOutNames = {};
+    var dirty = false;
+    var lastScan = null, preparing = false;
+
+    // ---------- helpers ----------
+    function el(tag, props) {
+        var node = document.createElement(tag);
+        props = props || {};
+        Object.keys(props).forEach(function (k) {
+            var v = props[k];
+            if (v === undefined || v === null) { return; }
+            if (k === 'text') { node.textContent = v; }
+            else if (k === 'cls') { node.className = v; }
+            else if (k.indexOf('on') === 0) { node.addEventListener(k.substring(2), v); }
+            else if (k === 'checked' || k === 'value' || k === 'disabled' || k === 'selected') { node[k] = v; }
+            else { node.setAttribute(k, v); }
+        });
+        for (var i = 2; i < arguments.length; i++) {
+            var c = arguments[i];
+            if (c === null || c === undefined || c === false) { continue; }
+            if (Array.isArray(c)) { c.forEach(function (x) { if (x) { node.appendChild(typeof x === 'string' ? document.createTextNode(x) : x); } }); }
+            else { node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); }
+        }
+        return node;
+    }
+    function $(id) { return document.getElementById(id); }
+    function clear(node) { while (node.firstChild) { node.removeChild(node.firstChild); } return node; }
+    function markDirty() {
+        dirty = true;
+        $('liDirty').textContent = 'Unsaved changes';
+        $('liUnsaved').style.display = '';
+        updateTestNote();
+    }
+    function markClean() {
+        dirty = false;
+        $('liDirty').textContent = '';
+        $('liUnsaved').style.display = 'none';
+        updateTestNote();
+    }
+    function apiGet(path, params) { return ApiClient.getJSON(ApiClient.getUrl(path, params || {})); }
+    function apiPost(path, body) {
+        return ApiClient.ajax({ type: 'POST', url: ApiClient.getUrl(path), dataType: 'json', data: body ? JSON.stringify(body) : undefined, contentType: body ? 'application/json' : undefined });
+    }
+    function apiPostNoBody(path) { return ApiClient.ajax({ type: 'POST', url: ApiClient.getUrl(path) }); }
+
+    // Turns any failure into a sentence a person can act on.
+    function errorText(err) {
+        if (!err) { return Promise.resolve('Something went wrong. Please try again.'); }
+        if (typeof err === 'string') { return Promise.resolve(err); }
+        var status = err.status;
+        var read = typeof err.text === 'function' ? err.text().then(null, function () { return ''; }) : Promise.resolve(err.message || '');
+        return read.then(function (body) {
+            var msg = '';
+            try { var j = JSON.parse(body); msg = typeof j === 'string' ? j : (j.Message || j.message || j.detail || j.title || ''); } catch (e) { msg = body && body.length < 300 && body.indexOf('<') < 0 ? body : ''; }
+            if (msg) { return msg; }
+            if (status === 401 || status === 403) { return 'Your session has expired or this account is not an administrator. Sign in again as an administrator.'; }
+            if (status === 404) { return 'The server could not find what was asked for. If you just updated the plugin, restart Jellyfin and reload this page.'; }
+            if (status >= 500) { return 'The Jellyfin server had a problem (error ' + status + '). Check the server log under Dashboard → Logs.'; }
+            if (!status) { return 'The Jellyfin server could not be reached. Check your connection and try again.'; }
+            return 'Request failed (error ' + status + ').';
+        });
+    }
+    function notice(msg) { if (window.Dashboard && Dashboard.alert) { Dashboard.alert({ message: msg }); } else { alert(msg); } }
+    function showError(prefix, err) { return errorText(err).then(function (t) { notice(prefix + ' ' + t); }); }
+    function loading(on) { if (window.Dashboard) { if (on) { Dashboard.showLoadingMsg(); } else { Dashboard.hideLoadingMsg(); } } }
+    function newId() { return (window.crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()).replace(/-/g, ''); }
+    function normId(id) { return String(id || '').replace(/-/g, '').toLowerCase(); }
+    function fileName(key) { var f = files.filter(function (x) { return x.Key.toLowerCase() === String(key).toLowerCase(); })[0]; return f ? f.Name : key + ' (missing)'; }
+    function nameOf(listName, id) {
+        var hit = lists[listName].filter(function (x) { return normId(x.id) === normId(id); })[0];
+        return hit ? hit.name : id;
+    }
+    function introsSummary(entries) {
+        if (!entries || entries.length === 0) { return 'nothing'; }
+        return entries.map(function (e) {
+            if (e === '*') { return 'all pre-rolls'; }
+            if (/^tag:/i.test(e)) { return 'tagged ' + e.substring(4); }
+            return /\/$/.test(e) ? 'all in ' + e : fileName(e);
+        }).join(', ');
+    }
+    function describeDate(v) {
+        var m = /^(\d{2})-(\d{2})$/.exec(v || '');
+        if (m) { return MONTHS[parseInt(m[1], 10) - 1] + ' ' + parseInt(m[2], 10); }
+        return v || 'any time';
+    }
+    function conditionSummary(c) {
+        var k = KINDS[c.Kind] || { label: c.Kind, type: 'list' };
+        var not = c.Negate ? ' is not ' : ' is ';
+        var vals = c.Values || [];
+        switch (k.type) {
+            case 'idlist': return k.label + not + vals.map(function (v) { return nameOf(k.source, v); }).join(' or ');
+            case 'checks': return k.label + not + vals.map(function (v) { var o = k.options.filter(function (x) { return x[0] === v; })[0]; return o ? o[1] : v; }).join(' or ');
+            case 'date': return k.label + (c.Negate ? ' outside ' : ' between ') + describeDate(c.From) + ' and ' + describeDate(c.To);
+            case 'range': return k.label + (c.Negate ? ' outside ' : ' ') + (c.From || 'any') + '–' + (c.To || 'any');
+            default: return k.label + not + vals.join(' or ');
+        }
+    }
+    function ruleSummary(r) {
+        if (!r.Conditions || r.Conditions.length === 0) { return 'Always'; }
+        return r.Conditions.map(conditionSummary).join(r.MatchMode === 'Any' ? ', or ' : ', and ');
+    }
+    function fmtLufs(v) { return v === null || v === undefined ? '–' : (Math.round(v * 10) / 10) + ' LUFS'; }
+    function fmtDur(s) { if (s === null || s === undefined) { return '–'; } return s >= 60 ? Math.floor(s / 60) + 'm ' + Math.round(s % 60) + 's' : Math.round(s) + 's'; }
+    function isAbsolutePath(p) { return /^\//.test(p) || /^[A-Za-z]:[\\\/]/.test(p) || /^\\\\/.test(p); }
+    function safeFolderName(n) { n = (n || '').trim(); return n.length > 0 && n.length <= 100 && n !== '.' && n !== '..' && !/[\/\\:*?"<>|]/.test(n); }
+
+    // ---------- validation ----------
+    function setFieldError(input, message) {
+        var holder = input.closest('label, .li-field, .li-cond, div') || input.parentNode;
+        var existing = holder.querySelector(':scope > .li-fielderror');
+        if (message) {
+            input.classList.add('li-invalid');
+            input.setAttribute('aria-invalid', 'true');
+            if (!existing) { existing = el('span', { cls: 'li-fielderror' }); holder.appendChild(existing); }
+            existing.textContent = message;
+        } else {
+            input.classList.remove('li-invalid');
+            input.removeAttribute('aria-invalid');
+            if (existing) { existing.parentNode.removeChild(existing); }
+        }
+        return !message;
+    }
+    function checkNumber(input) {
+        var min = parseFloat(input.dataset.min), max = parseFloat(input.dataset.max), decimal = !!input.dataset.decimal;
+        var raw = String(input.value).trim();
+        var n = Number(raw);
+        var msg = null;
+        if (raw === '' || isNaN(n)) { msg = 'Enter a number from ' + min + ' to ' + max + '.'; }
+        else if (!decimal && Math.floor(n) !== n) { msg = 'Enter a whole number from ' + min + ' to ' + max + '.'; }
+        else if (n < min || n > max) { msg = 'Must be from ' + min + ' to ' + max + '.'; }
+        setFieldError(input, msg);
+        return msg ? null : n;
+    }
+    function showErrors(problems) {
+        var host = clear($('liErrors'));
+        Array.prototype.forEach.call(page.querySelectorAll('.li-tab .li-dot'), function (d) { d.parentNode.removeChild(d); });
+        if (!problems.length) { return; }
+        var tabs = {};
+        problems.forEach(function (p) { tabs[p.tab] = true; });
+        Object.keys(tabs).forEach(function (t) { var b = page.querySelector('.li-tab[data-tab="' + t + '"]'); if (b) { b.appendChild(el('span', { cls: 'li-dot', title: 'Needs attention' })); } });
+        host.appendChild(el('div', { cls: 'li-card li-errorbox', role: 'alert' },
+            el('b', { text: 'Not saved. Please fix ' + (problems.length === 1 ? 'this:' : 'these ' + problems.length + ' things:') }),
+            el('ul', {}, problems.map(function (p) {
+                return el('li', {}, TAB_NAMES[p.tab] + ' tab: ' + p.message + ' ', p.focus ? el('button', { type: 'button', cls: 'li-link', text: 'Show me', onclick: function () { showTab(p.tab); p.focus.scrollIntoView({ block: 'center' }); p.focus.focus(); } }) : null);
+            }))));
+        host.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+    // Checks the whole page before saving. Returns a list of { tab, message, focus }.
+    function validateAll() {
+        var problems = [];
+        readFolders();
+        $('liFolders').classList.remove('li-invalid');
+        var relative = config.IntroFolders.filter(function (f) { return !isAbsolutePath(f); });
+        if (relative.length) {
+            setFieldError($('liFolders'), 'Use full paths: ' + relative.join(', '));
+            problems.push({ tab: 'files', message: 'folder "' + relative[0] + '" is not a full path (it should start with / or a drive letter).', focus: $('liFolders') });
+        } else { setFieldError($('liFolders'), null); }
+        var ext = normalizeExtensions($('liExtensions').value);
+        if (!ext) {
+            setFieldError($('liExtensions'), 'Enter at least one file type, such as .mp4');
+            problems.push({ tab: 'files', message: 'no valid video file types.', focus: $('liExtensions') });
+        } else { setFieldError($('liExtensions'), null); }
+
+        Array.prototype.forEach.call(page.querySelectorAll('input[data-field]'), function (input) {
+            if (input.id === 'liBingeGap' && config.EpisodeMode !== 'FirstOfBinge') { setFieldError(input, null); return; }
+            var n = checkNumber(input);
+            if (n === null) { problems.push({ tab: input.closest('[data-panel]').getAttribute('data-panel'), message: input.dataset.label + ' must be from ' + input.dataset.min + ' to ' + input.dataset.max + '.', focus: input }); }
+        });
+        if (config.EnabledItemTypes.length === 0) { problems.push({ tab: 'playback', message: 'tick at least one kind of video under "Play pre-rolls before".', focus: $('liItemTypes') }); }
+        if (config.TitleIntrosEnabled && !safeFolderName($('liTitleFolder').value)) {
+            setFieldError($('liTitleFolder'), 'Use a plain folder name, such as .prerolls, without slashes.');
+            problems.push({ tab: 'playback', message: 'the per-title folder name must be a plain name, such as .prerolls.', focus: $('liTitleFolder') });
+        } else { setFieldError($('liTitleFolder'), null); }
+        var dl = ($('liCatFolder').value || '').trim();
+        if (dl && !isAbsolutePath(dl)) {
+            setFieldError($('liCatFolder'), 'Use a full path, or leave it empty.');
+            problems.push({ tab: 'catalog', message: 'the download folder must be a full path, or empty.', focus: $('liCatFolder') });
+        } else if (dl && !config.IntroFolders.some(function (f) { var root = f.replace(/[\/\\]$/, ''); return dl.replace(/[\/\\]$/, '') === root || dl.indexOf(root + '/') === 0 || dl.indexOf(root + '\\') === 0; })) {
+            setFieldError($('liCatFolder'), 'This folder is not inside a pre-roll folder, so downloads would never play.');
+            problems.push({ tab: 'catalog', message: 'the download folder must be inside one of your pre-roll folders.', focus: $('liCatFolder') });
+        } else { setFieldError($('liCatFolder'), null); }
+        var anyStep = config.PreShow.length === 0 || config.PreShow.some(function (s) { return s.Enabled; });
+        if (!anyStep) { problems.push({ tab: 'preshow', message: 'every pre-show step is turned off, so nothing would play. Turn one on.', focus: $('liSteps') }); }
+        config.PreShow.forEach(function (s, i) {
+            if (s.Kind === 'Fixed' && s.Enabled && s.Intros.length === 0) { problems.push({ tab: 'preshow', message: 'step ' + (i + 1) + ' (Fixed pre-rolls) has no pre-rolls ticked.', focus: $('liSteps') }); }
+            if ((s.Kind === 'Rules' || s.Kind === 'Trailers') && !(s.Count >= 1 && s.Count <= 10)) { problems.push({ tab: 'preshow', message: 'step ' + (i + 1) + ' needs a number from 1 to 10.', focus: $('liSteps') }); }
+        });
+        if (editing) { problems.push({ tab: 'rules', message: 'the rule editor is still open. Click "Keep rule" or "Cancel" first.', focus: $('liRuleEditor') }); }
+        if (editingFile) { problems.push({ tab: 'files', message: 'a pre-roll editor is still open. Click "Keep" or "Cancel" first.', focus: $('liFilesBody') }); }
+        return problems;
+    }
+    function normalizeExtensions(text) {
+        var seen = {};
+        return (text || '').split(/[\s,;]+/).map(function (e) { e = e.trim().toLowerCase(); return e && e[0] !== '.' ? '.' + e : e; })
+            .filter(function (e) { if (!/^\.[a-z0-9]{1,6}$/.test(e) || seen[e]) { return false; } seen[e] = true; return true; }).join(', ');
+    }
+
+    // ---------- tabs ----------
+    function showTab(tab) {
+        Array.prototype.forEach.call(page.querySelectorAll('.li-tab'), function (b) { b.classList.toggle('active', b.getAttribute('data-tab') === tab); });
+        Array.prototype.forEach.call(page.querySelectorAll('.li-panel'), function (p) { p.classList.toggle('active', p.getAttribute('data-panel') === tab); });
+        if (tab === 'files') { loadFiles(); }
+        if (tab === 'catalog' && catMeta.categories.length === 0) { loadCatalog(); }
+        if (tab === 'catalog') { loadTraffic(); }
+    }
+    $('liTabs').addEventListener('click', function (e) {
+        var b = e.target.closest ? e.target.closest('.li-tab') : null;
+        if (b) { showTab(b.getAttribute('data-tab')); }
+    });
+    Array.prototype.forEach.call(page.querySelectorAll('[data-goto]'), function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-goto')); }); });
+
+    // ---------- loading ----------
+    function load() {
+        loading(true);
+        var userId = ApiClient.getCurrentUserId();
+        var safe = function (p, fallback) { return p.then(null, function () { return fallback; }); };
+        return Promise.all([
+            ApiClient.getPluginConfiguration(PLUGIN_ID),
+            safe(ApiClient.getUsers(), []),
+            safe(ApiClient.getVirtualFolders(), []),
+            safe(ApiClient.getGenres(userId, { SortBy: 'SortName' }), { Items: [] }),
+            safe(ApiClient.getStudios(userId, { SortBy: 'SortName' }), { Items: [] }),
+            safe(apiGet('Items/Filters', { UserId: userId, IncludeItemTypes: 'Movie,Series,Episode', Recursive: true }), {}),
+            safe(ApiClient.getItems(userId, { IncludeItemTypes: 'BoxSet', Recursive: true, SortBy: 'SortName' }), { Items: [] }),
+            safe(ApiClient.getItems(userId, { IncludeItemTypes: 'Series', Recursive: true, SortBy: 'SortName' }), { Items: [] }),
+            safe(apiGet(API + 'Status'), null),
+            safe(apiGet('Localization/ParentalRatings'), [])
+        ]).then(function (r) {
+            config = r[0];
+            lists.users = (r[1] || []).map(function (u) { return { id: u.Id, name: u.Name }; });
+            lists.libraries = (r[2] || []).map(function (f) { return { id: f.ItemId, name: f.Name }; });
+            lists.genres = (r[3].Items || []).map(function (x) { return x.Name; });
+            lists.studios = (r[4].Items || []).map(function (x) { return x.Name; });
+            lists.tags = r[5].Tags || [];
+            var known = (r[9] || []).map(function (x) { return x.Name; });
+            var seen = {};
+            lists.ratings = (r[5].OfficialRatings || []).concat(known).filter(function (x) { if (!x || seen[x]) { return false; } seen[x] = true; return true; });
+            lists.collections = (r[6].Items || []).map(function (x) { return { id: x.Id, name: x.Name }; });
+            lists.series = (r[7].Items || []).map(function (x) { return { id: x.Id, name: x.Name }; });
+            normalizeConfig();
+            editing = null; editingFile = null;
+            renderAll();
+            renderStatus(r[8]);
+            showErrors([]);
+            markClean();
+            return Promise.all([loadFiles(), loadOptOutNames()]);
+        }).then(null, function (err) { return showError('Could not load the plugin settings.', err); }).then(function () { loading(false); });
+    }
+
+    function normalizeConfig() {
+        ['IntroFolders', 'Rules', 'PreShow', 'EnabledItemTypes', 'ExcludedUserIds', 'FileSettings', 'OptOutItemIds', 'CatalogSubscriptions'].forEach(function (k) { config[k] = config[k] || []; });
+        config.Rules.forEach(function (r) { r.Intros = r.Intros || []; r.Conditions = r.Conditions || []; r.Id = r.Id || newId(); });
+        config.PreShow.forEach(function (s) { s.Intros = s.Intros || []; s.ApplyTo = s.ApplyTo || []; });
+        config.FileSettings.forEach(function (f) { f.Tags = f.Tags || []; });
+    }
+
+    function renderStatus(status) {
+        var host = clear($('liBanner'));
+        var imp = status && status.Import;
+        if (imp && imp.LocalIntrosActive) {
+            host.appendChild(el('div', { cls: 'li-card li-banner', role: 'status' },
+                el('b', { text: 'The Local Intros plugin is also running. ' }),
+                'Both plugins add pre-rolls, so viewers may get two sets. Disable or uninstall Local Intros in Dashboard → Plugins.',
+                imp.Available ? el('div', { cls: 'li-actions' }, el('button', { type: 'button', cls: 'li-btn', text: 'Import its settings first', onclick: importLocalIntros })) : null));
+        }
+        var info = $('liImportInfo');
+        if (imp && imp.Available) {
+            info.textContent = 'Found Local Intros settings (' + imp.Summary + '). Importing replaces your folders, rules, pre-show and playback settings here.';
+            $('liImportLocal').disabled = false;
+        } else {
+            info.textContent = 'No Local Intros settings were found on this server, so there is nothing to import.';
+            $('liImportLocal').disabled = true;
+        }
+    }
+
+    function importLocalIntros() {
+        if (!confirm('Replace your folders, rules, pre-show and playback settings with the ones from Local Intros? Your catalog and per-file settings are kept.')) { return; }
+        loading(true);
+        apiPost(API + 'Import').then(function (r) { notice(r.Message + ' Remember to disable the Local Intros plugin.'); return load(); }, function (err) { return showError('Import failed.', err); }).then(function () { loading(false); });
+    }
+    $('liImportLocal').addEventListener('click', importLocalIntros);
+
+    function loadFiles() {
+        return apiGet(API + 'Files').then(function (d) {
+            files = d.Files || [];
+            folders = d.Folders || [];
+            introTags = d.Tags || [];
+            lastScan = d.LastScan; preparing = d.Preparing;
+            renderFiles();
+            renderRules();
+            if (!editing) { renderSteps(); }
+        }, function (err) { return errorText(err).then(function (t) { $('liScanStatus').textContent = 'Could not load the pre-roll list: ' + t; }); });
+    }
+
+    function renderAll() {
+        renderFolders();
+        renderRules();
+        renderEditor();
+        renderSteps();
+        renderPlayback();
+        renderCatalogSettings();
+        renderTestOptions();
+    }
+
+    // ---------- files ----------
+    function renderFolders() {
+        $('liFolders').value = config.IntroFolders.join('\n');
+        $('liSubfolders').checked = !!config.ScanSubfolders;
+        $('liExtensions').value = (config.VideoExtensions || '').split(',').join(', ');
+        checkFolders();
+    }
+    function readFolders() {
+        config.IntroFolders = $('liFolders').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+        config.ScanSubfolders = $('liSubfolders').checked;
+        var ext = normalizeExtensions($('liExtensions').value);
+        config.VideoExtensions = ext ? ext.replace(/, /g, ',') : config.VideoExtensions;
+    }
+    var folderTimer = null;
+    function checkFolders() {
+        clearTimeout(folderTimer);
+        folderTimer = setTimeout(function () {
+            var paths = $('liFolders').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+            var host = clear($('liFolderChecks'));
+            if (!paths.length) { host.appendChild(el('div', { cls: 'li-warn', text: 'Add at least one folder, otherwise there is nothing to play (except per-title pre-rolls).' })); return; }
+            apiPost(API + 'CheckFolders', { Paths: paths, Extensions: normalizeExtensions($('liExtensions').value) }).then(function (results) {
+                clear(host);
+                (results || []).forEach(function (r) { host.appendChild(el('div', { cls: r.Ok ? 'li-good' : 'li-bad', text: (r.Ok ? '✓ ' : '✗ ') + r.Path + ': ' + r.Message })); });
+            }, function () { });
+        }, 400);
+    }
+    $('liFolders').addEventListener('input', function () { readFolders(); markDirty(); checkFolders(); });
+    $('liSubfolders').addEventListener('change', function () { readFolders(); markDirty(); checkFolders(); });
+    $('liExtensions').addEventListener('input', function () { markDirty(); });
+    $('liExtensions').addEventListener('change', function () {
+        var ext = normalizeExtensions($('liExtensions').value);
+        if (ext) { $('liExtensions').value = ext; setFieldError($('liExtensions'), null); } else { setFieldError($('liExtensions'), 'Enter at least one file type, such as .mp4'); }
+        readFolders(); checkFolders();
+    });
+
+    function renderScan() {
+        var box = clear($('liScanStatus'));
+        var scan = lastScan;
+        if (!scan) { box.textContent = 'Not scanned yet. Add a folder and click Save and scan.'; return; }
+        box.appendChild(el('div', { text: 'Last scan ' + new Date(scan.FinishedUtc).toLocaleString() + ': ' + scan.Files + ' pre-roll' + (scan.Files === 1 ? '' : 's') + ' found' + (scan.Added ? ', ' + scan.Added + ' new' : '') + (scan.Removed ? ', ' + scan.Removed + ' removed' : '') + '.' }));
+        if (preparing) { box.appendChild(el('div', { cls: 'li-info', text: 'Checking codecs and loudness in the background. This list updates by itself.' })); }
+        (scan.Problems || []).forEach(function (p) { box.appendChild(el('div', { cls: 'li-bad', text: '⚠ ' + p })); });
+    }
+
+    function fileSettings(key, create) {
+        var s = config.FileSettings.filter(function (x) { return x.Key.toLowerCase() === key.toLowerCase(); })[0];
+        if (!s && create) { s = { Key: key, Name: null, Tags: [], Weight: null, Rating: null, From: null, To: null, Enabled: null }; config.FileSettings.push(s); }
+        return s;
+    }
+
+    var refreshTimer = null;
+    function renderFiles() {
+        renderScan();
+        clearTimeout(refreshTimer);
+        if (preparing) { refreshTimer = setTimeout(function () { if (!editingFile && page.querySelector('[data-panel=files].active')) { loadFiles(); } }, 5000); }
+        $('liFilesTitle').textContent = 'Pre-rolls (' + files.length + ')';
+        var body = clear($('liFilesBody'));
+        if (files.length === 0) {
+            body.appendChild(el('tr', {}, el('td', { colspan: 6, cls: 'li-muted', text: 'No pre-rolls yet. Add a folder above and click Save and scan, or download some from the Catalog tab.' })));
+            return;
+        }
+        files.forEach(function (f) {
+            var actions = el('td', { style: 'white-space:nowrap' });
+            var row = el('tr', { cls: f.Enabled ? '' : 'li-off', 'data-key': f.Key },
+                el('td', {},
+                    el('div', {}, f.Name, f.Enabled ? null : el('span', { cls: 'li-badge grey', text: 'off' }), f.IsNew ? el('span', { cls: 'li-badge', title: 'Added recently; plays more often while the new pre-roll boost lasts', text: 'NEW' }) : null, f.PreparedFor ? el('span', { cls: 'li-badge grey', title: 'A ' + f.PreparedFor + ' copy is played instead of the original', text: f.PreparedFor }) : null),
+                    el('div', { cls: 'li-muted', text: f.Key }),
+                    (f.Tags.length || f.Rating || f.From || f.To || f.Weight !== 1) ? el('div', { cls: 'li-chips' },
+                        f.Tags.map(function (t) { return el('span', { cls: 'li-chip plain', text: t }); }),
+                        f.Rating ? el('span', { cls: 'li-chip plain', text: 'Rated ' + f.Rating }) : null,
+                        (f.From || f.To) ? el('span', { cls: 'li-chip plain', text: describeDate(f.From) + ' – ' + describeDate(f.To) }) : null,
+                        f.Weight !== 1 ? el('span', { cls: 'li-chip plain', text: 'Weight ' + f.Weight }) : null) : null,
+                    f.Credit ? el('div', { cls: 'li-muted' }, 'By ' + f.Credit + ' ', f.SourceUrl ? el('a', { href: f.SourceUrl, target: '_blank', rel: 'noopener', text: 'source' }) : null) : null,
+                    (f.Notes || []).map(function (w) { var info = /copy is used/.test(w); return el('div', { cls: info ? 'li-info' : 'li-warn', text: (info ? 'ℹ ' : '⚠ ') + w }); })),
+                el('td', { text: fmtDur(f.DurationSeconds) }),
+                el('td', {}, el('div', { text: f.Video || '–' }), el('div', { cls: 'li-muted', text: f.Audio || '' })),
+                el('td', { text: f.PrepStatus === 'Working' || f.PrepStatus === 'Waiting' ? 'checking…' : fmtLufs(f.Loudness) }),
+                el('td', { title: f.LastPlayedUtc ? 'Last played ' + new Date(f.LastPlayedUtc).toLocaleString() : 'Not played yet', text: String(f.Plays) }),
+                actions);
+            actions.appendChild(el('button', { type: 'button', cls: 'li-btn small', text: editingFile === f.Key ? 'Close' : 'Edit', onclick: function () { editingFile = editingFile === f.Key ? null : f.Key; renderFiles(); } }));
+            actions.appendChild(document.createTextNode(' '));
+            actions.appendChild(el('button', {
+                type: 'button', cls: 'li-btn small', text: 'Preview', onclick: function () {
+                    var existing = row.nextSibling && row.nextSibling.classList && row.nextSibling.classList.contains('li-preview') ? row.nextSibling : null;
+                    if (existing) { existing.parentNode.removeChild(existing); return; }
+                    var src = ApiClient.getUrl('Videos/' + f.ItemId + '/stream', { static: true, ApiKey: ApiClient.accessToken() });
+                    var v = el('video', { controls: 'controls', autoplay: 'autoplay', src: src });
+                    v.addEventListener('error', function () { v.replaceWith(el('div', { cls: 'li-warn', text: 'This browser cannot play the original file. Viewers get the compatible copy when that option is on.' })); });
+                    row.parentNode.insertBefore(el('tr', { cls: 'li-preview' }, el('td', { colspan: 6 }, v)), row.nextSibling);
+                }
+            }));
+            body.appendChild(row);
+            if (editingFile === f.Key) { body.appendChild(el('tr', { cls: 'li-fileeditor' }, el('td', { colspan: 6 }, fileEditor(f, function () { editingFile = null; renderFiles(); })))); }
+        });
+    }
+
+    function ratingSelect(current) {
+        var sel = el('select', {}, el('option', { value: '', text: 'No rating (suitable for everyone)' }));
+        var options = lists.ratings.slice();
+        if (current && options.indexOf(current) < 0) { options.unshift(current); }
+        options.forEach(function (r) { sel.appendChild(el('option', { value: r, text: r, selected: r === current })); });
+        return sel;
+    }
+
+    function fileEditor(f, done) {
+        var s = JSON.parse(JSON.stringify(fileSettings(f.Key, false) || { Key: f.Key, Tags: [] }));
+        s.Tags = s.Tags || [];
+        var nameInput = el('input', { type: 'text', maxlength: '100', value: s.Name || '', placeholder: f.FileName });
+        var tagInput = el('input', { type: 'text', value: s.Tags.join(', '), placeholder: 'e.g. christmas, logo' });
+        var rating = ratingSelect(s.Rating || '');
+        var weight = el('input', { type: 'number', min: '0.1', max: '100', step: '0.5', value: s.Weight || '', placeholder: 'Normal (1)', 'data-min': '0.1', 'data-max': '100', 'data-decimal': '1' });
+        var dates = { From: s.From || '', To: s.To || '' };
+        var enabled = s.Enabled === null || s.Enabled === undefined ? 'inherit' : String(s.Enabled);
+        var dateHost = dateEditor(dates, true);
+        var err = el('div', { cls: 'li-fielderror li-editorerror', role: 'alert' });
+        var fromFile = f.Sidecar ? 'Its settings file also sets some values; anything you set here wins, and tags from both are combined.' : 'Leave a field empty to keep the default.';
+        return el('div', { cls: 'li-card', style: 'border-color:#00a4dc;margin:.3em 0' },
+            el('p', { cls: 'li-muted', text: 'Settings for "' + f.Name + '". ' + fromFile }),
+            el('div', { cls: 'li-row' },
+                el('label', {}, 'Display name', nameInput),
+                el('label', {}, 'Tags', tagInput, el('span', { cls: 'li-hint', text: 'Separate with commas. Rules can pick pre-rolls by tag.' })),
+                el('label', {}, 'Rating', rating, el('span', { cls: 'li-hint', text: 'Used by age-safe on the Playback tab.' })),
+                el('label', {}, 'Weight', weight, el('span', { cls: 'li-hint', text: '0.1–100. 2 = twice as likely as normal.' })),
+                el('label', {}, 'Plays', el('select', { onchange: function (e) { enabled = e.target.value; } },
+                    el('option', { value: 'inherit', text: f.Sidecar ? 'As its settings file says' : 'Yes (normal)', selected: enabled === 'inherit' }),
+                    el('option', { value: 'false', text: 'Never (turned off)', selected: enabled === 'false' }),
+                    el('option', { value: 'true', text: 'Yes, even if its file says no', selected: enabled === 'true' })))),
+            el('div', { style: 'margin-top:.5em' }, el('span', { cls: 'li-muted', text: 'Only play on certain dates:' }), dateHost),
+            err,
+            el('div', { cls: 'li-actions' },
+                el('button', {
+                    type: 'button', cls: 'li-btn primary', text: 'Keep', onclick: function () {
+                        var problems = [];
+                        var w = null;
+                        if (String(weight.value).trim() !== '') { w = checkNumber(weight); if (w === null) { problems.push('Weight must be a number from 0.1 to 100.'); } } else { setFieldError(weight, null); }
+                        var dateProblem = validateDates(dates, true);
+                        if (dateProblem) { problems.push(dateProblem); }
+                        err.textContent = problems.join(' ');
+                        if (problems.length) { return; }
+                        var target = fileSettings(f.Key, true);
+                        target.Name = nameInput.value.trim() || null;
+                        target.Tags = tagInput.value.split(',').map(function (t) { return t.trim(); }).filter(function (t, i, a) { return t && a.indexOf(t) === i; });
+                        target.Rating = rating.value || null;
+                        target.Weight = w;
+                        target.From = dates.From || null;
+                        target.To = dates.To || null;
+                        target.Enabled = enabled === 'inherit' ? null : enabled === 'true';
+                        markDirty();
+                        done();
+                    }
+                }),
+                el('button', { type: 'button', cls: 'li-btn', text: 'Cancel', onclick: done }),
+                el('button', { type: 'button', cls: 'li-btn', text: 'Reset to defaults', title: 'Removes the settings made on this page for this pre-roll', onclick: function () { config.FileSettings = config.FileSettings.filter(function (x) { return x.Key.toLowerCase() !== f.Key.toLowerCase(); }); markDirty(); done(); } })));
+    }
+
+    $('liScanBtn').addEventListener('click', function () {
+        loading(true);
+        save(true).then(function (ok) { if (!ok) { return null; } return apiPost(API + 'Scan').then(loadFiles); })
+            .then(null, function (err) { return showError('Scan failed.', err); })
+            .then(function () { loading(false); });
+    });
+    $('liRebuildBtn').addEventListener('click', function () {
+        if (!confirm('Remove the hidden pre-roll items from the Jellyfin library and create them again? Your files, rules and settings are not touched.')) { return; }
+        loading(true);
+        apiPost(API + 'Rebuild').then(loadFiles)
+            .then(function () { notice('Library items repaired.'); }, function (err) { return showError('Repair failed.', err); })
+            .then(function () { loading(false); });
+    });
+    $('liPrepareBtn').addEventListener('click', function () {
+        apiPostNoBody(API + 'Prepare').then(function () { preparing = true; renderScan(); setTimeout(loadFiles, 1500); }, function (err) { return showError('Could not start the check.', err); });
+    });
+    $('liResetStats').addEventListener('click', function () {
+        if (!confirm('Set the play count of every pre-roll back to 0?')) { return; }
+        apiPostNoBody(API + 'Stats/Reset').then(loadFiles, function (err) { return showError('Reset failed.', err); });
+    });
+
+    // ---------- pre-roll picker (shared by rules and fixed steps) ----------
+    function introPicker(selected, onChange, allowAll) {
+        var box = el('div', { cls: 'li-pick' });
+        var set = {};
+        selected.forEach(function (k) { set[k.toLowerCase()] = k; });
+        function add(value, label, muted) {
+            box.appendChild(el('label', {},
+                el('input', {
+                    type: 'checkbox', checked: !!set[value.toLowerCase()], 'data-value': value, onchange: function (e) {
+                        if (e.target.checked) { set[value.toLowerCase()] = value; } else { delete set[value.toLowerCase()]; }
+                        onChange(Object.keys(set).map(function (k) { return set[k]; }));
+                    }
+                }),
+                el('span', { cls: muted ? 'li-muted' : '', text: label })));
+        }
+        if (allowAll) { add('*', 'All pre-rolls (including ones added later)'); }
+        if (folders.length) { box.appendChild(el('div', { cls: 'li-pickhead', text: 'Folders' })); folders.forEach(function (f) { add(f, 'Everything in ' + f); }); }
+        if (introTags.length) { box.appendChild(el('div', { cls: 'li-pickhead', text: 'Tags' })); introTags.forEach(function (t) { add('tag:' + t, 'Every pre-roll tagged "' + t + '"'); }); }
+        if (files.length) { box.appendChild(el('div', { cls: 'li-pickhead', text: 'Single pre-rolls' })); files.forEach(function (f) { add(f.Key, f.Name + '  —  ' + f.Key); }); }
+        selected.forEach(function (k) {
+            var known = k === '*' || folders.indexOf(k) >= 0 || /^tag:/i.test(k) && introTags.some(function (t) { return ('tag:' + t).toLowerCase() === k.toLowerCase(); }) || files.some(function (f) { return f.Key.toLowerCase() === k.toLowerCase(); });
+            if (!known) { add(k, k + ' (not found; untick to remove)', true); }
+        });
+        if (files.length === 0) { box.appendChild(el('div', { cls: 'li-muted', text: 'No pre-rolls found yet. Add a folder on the Files tab.' })); }
+        return box;
+    }
+
+    // ---------- rules ----------
+    function renderRules() {
+        if (!config) { return; }
+        var body = clear($('liRulesBody'));
+        var order = config.Rules.map(function (r, i) { return i; }).sort(function (a, b) {
+            return (config.Rules[b].Precedence - config.Rules[a].Precedence) || (a - b);
+        });
+        if (order.length === 0) {
+            body.appendChild(el('tr', {}, el('td', { colspan: 7, cls: 'li-warn', text: 'No rules, so Rule picks steps play nothing. Click Add rule, or add a rule with no conditions that plays all pre-rolls.' })));
+        }
+        order.forEach(function (i) {
+            var r = config.Rules[i];
+            body.appendChild(el('tr', { cls: r.Enabled ? '' : 'li-off', 'data-rule': r.Name },
+                el('td', {}, el('input', { type: 'checkbox', checked: r.Enabled, 'aria-label': 'Rule on', title: r.Enabled ? 'On. Untick to pause this rule.' : 'Off', onchange: function (e) { r.Enabled = e.target.checked; markDirty(); renderRules(); } })),
+                el('td', {}, el('div', { text: r.Name || '(unnamed)' }), r.Group ? el('div', { cls: 'li-muted', text: 'Group: ' + r.Group }) : null),
+                el('td', { text: ruleSummary(r) }),
+                el('td', { text: introsSummary(r.Intros) }),
+                el('td', { text: String(r.Precedence) }),
+                el('td', { text: String(r.Weight) }),
+                el('td', { style: 'white-space:nowrap' },
+                    el('button', { type: 'button', cls: 'li-btn small', text: 'Edit', onclick: function () { openEditor(i); } }), ' ',
+                    el('button', { type: 'button', cls: 'li-btn small', text: 'Copy', onclick: function () { var c = JSON.parse(JSON.stringify(r)); c.Id = newId(); c.Name = (r.Name || 'Rule') + ' (copy)'; openEditor(null, c); } }), ' ',
+                    el('button', { type: 'button', cls: 'li-btn small danger', text: 'Delete', onclick: function () { if (confirm('Delete the rule "' + (r.Name || '') + '"?')) { config.Rules.splice(i, 1); editing = null; markDirty(); renderRules(); renderEditor(); } } }))));
+        });
+    }
+
+    function blankRule() { return { Id: newId(), Name: '', Enabled: true, Group: '', Precedence: 1, Weight: 1, MatchMode: 'All', Intros: [], Conditions: [] }; }
+
+    function openEditor(index, preset) {
+        var rule = index === null ? (preset || blankRule()) : JSON.parse(JSON.stringify(config.Rules[index]));
+        editing = { index: index, rule: rule };
+        renderEditor();
+        $('liRuleEditor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    $('liAddRule').addEventListener('click', function () { openEditor(null); });
+    $('liPreset').addEventListener('change', function (e) {
+        var v = e.target.value; e.target.value = '';
+        if (!v) { return; }
+        var p = v.split('|');
+        var r = blankRule();
+        r.Name = p[0]; r.Precedence = 10;
+        r.Conditions.push({ Kind: 'CurrentDate', Values: [], From: p[1], To: p[2], Negate: false });
+        var tagged = introTags.filter(function (t) { return t.toLowerCase() === p[0].toLowerCase(); })[0];
+        if (tagged) { r.Intros.push('tag:' + tagged); }
+        openEditor(null, r);
+    });
+
+    function renderEditor() {
+        var host = clear($('liRuleEditor'));
+        if (!editing) { return; }
+        var r = editing.rule;
+        var condBox = el('div');
+        var errBox = el('div', { cls: 'li-fielderror li-editorerror', role: 'alert' });
+        var nameInput = el('input', { type: 'text', maxlength: '100', value: r.Name, placeholder: 'e.g. Horror at night', oninput: function (e) { r.Name = e.target.value; } });
+        var prioInput = el('input', { 'aria-label': 'Priority', type: 'number', min: '-1000', max: '1000', step: '1', value: r.Precedence, 'data-min': '-1000', 'data-max': '1000' });
+        var weightInput = el('input', { 'aria-label': 'Weight', type: 'number', min: '1', max: '1000', step: '1', value: r.Weight, 'data-min': '1', 'data-max': '1000' });
+        var pickerHost = el('div', {}, introPicker(r.Intros, function (v) { r.Intros = v; }, true));
+
+        host.appendChild(el('div', { cls: 'li-card', style: 'border-color:#00a4dc' },
+            el('h3', { text: editing.index === null ? 'New rule' : 'Edit rule' }),
+            el('div', { cls: 'li-row' },
+                el('label', {}, 'Name', nameInput),
+                el('label', {}, 'Priority', prioInput, el('span', { cls: 'li-hint', text: 'Higher wins when several rules match. -1000 to 1000.' })),
+                el('label', {}, 'Weight', weightInput, el('span', { cls: 'li-hint', text: 'How often, compared with other rules of the same priority. 1 to 1000.' })),
+                el('label', { cls: 'li-inline' }, el('input', { type: 'checkbox', checked: r.Enabled, onchange: function (e) { r.Enabled = e.target.checked; } }), 'On')),
+            el('h3', { style: 'margin-top:1em', text: 'When' }),
+            el('div', { cls: 'li-row' },
+                el('label', {}, 'Play when',
+                    el('select', { onchange: function (e) { r.MatchMode = e.target.value; } },
+                        el('option', { value: 'All', text: 'all of these are true', selected: r.MatchMode !== 'Any' }),
+                        el('option', { value: 'Any', text: 'any one of these is true', selected: r.MatchMode === 'Any' })))),
+            condBox,
+            el('div', { cls: 'li-actions' },
+                el('select', {
+                    'aria-label': 'Add a condition',
+                    onchange: function (e) {
+                        if (!e.target.value) { return; }
+                        r.Conditions.push({ Kind: e.target.value, Values: [], From: '', To: '', Negate: false });
+                        e.target.value = '';
+                        renderConditions();
+                    }
+                }, el('option', { value: '', text: '+ Add a condition…' }), Object.keys(KINDS).map(function (k) { return el('option', { value: k, text: KINDS[k].label }); }))),
+            el('p', { cls: 'li-hint', text: 'No conditions = this rule always matches.' }),
+            el('h3', { style: 'margin-top:1em', text: 'Play these pre-rolls' }),
+            pickerHost,
+            el('details', {}, el('summary', { text: 'More options' }),
+                el('div', { cls: 'li-row' },
+                    el('label', {}, 'Group', el('input', { type: 'text', maxlength: '50', value: r.Group || '', placeholder: 'Empty = normal rule', oninput: function (e) { r.Group = e.target.value.trim(); } }),
+                        el('span', { cls: 'li-hint', text: 'Rules with a group are only used by a Pre-show "Rule picks" step set to that group. Use it for a second, separate pick, such as a rating card.' })))),
+            errBox,
+            el('div', { cls: 'li-actions' },
+                el('button', { type: 'button', cls: 'li-btn primary', text: 'Keep rule', onclick: commitRule }),
+                el('button', { type: 'button', cls: 'li-btn', text: 'Cancel', onclick: function () { editing = null; renderEditor(); } }),
+                el('span', { cls: 'li-hint', text: 'Then click Save to apply your changes.' }))));
+
+        function renderConditions() {
+            clear(condBox);
+            r.Conditions.forEach(function (c, ci) { condBox.appendChild(conditionEditor(c, function () { r.Conditions.splice(ci, 1); renderConditions(); })); });
+        }
+        renderConditions();
+
+        function commitRule() {
+            var problems = [];
+            var prio = checkNumber(prioInput), weight = checkNumber(weightInput);
+            if (prio === null) { problems.push('Priority must be a whole number from -1000 to 1000.'); }
+            if (weight === null) { problems.push('Weight must be a whole number from 1 to 1000.'); }
+            r.Conditions.forEach(function (c, i) {
+                var p = validateCondition(c);
+                if (p) { problems.push('Condition ' + (i + 1) + ' (' + (KINDS[c.Kind] || { label: c.Kind }).label + '): ' + p); }
+            });
+            if (r.Intros.length === 0) { problems.push('Tick at least one pre-roll, folder or tag under "Play these pre-rolls".'); pickerHost.classList.add('li-invalid'); } else { pickerHost.classList.remove('li-invalid'); }
+            var dupe = config.Rules.some(function (x, i) { return i !== editing.index && x.Name && r.Name && x.Name.trim().toLowerCase() === r.Name.trim().toLowerCase(); });
+            if (dupe) { problems.push('Another rule is already called "' + r.Name.trim() + '". Use a different name.'); setFieldError(nameInput, 'Name already used.'); } else { setFieldError(nameInput, null); }
+            clear(errBox);
+            if (problems.length) {
+                errBox.appendChild(el('b', { text: 'This rule can\'t be kept yet:' }));
+                errBox.appendChild(el('ul', {}, problems.map(function (p) { return el('li', { text: p }); })));
+                return;
+            }
+            r.Precedence = prio; r.Weight = weight;
+            r.Name = (r.Name || '').trim() || (r.Conditions.length ? conditionSummary(r.Conditions[0]) : 'Always');
+            if (editing.index === null) { config.Rules.push(r); } else { config.Rules[editing.index] = r; }
+            editing = null;
+            markDirty();
+            renderEditor();
+            renderRules();
+        }
+    }
+
+    function validateDates(c, allowNone) {
+        var from = c.From || '', to = c.To || '';
+        if (!from && !to) { return allowNone ? null : 'Choose at least a start or an end date.'; }
+        var yearly = /^\d{2}-\d{2}$/;
+        var once = /^\d{4}-\d{2}-\d{2}$/;
+        var bad = [from, to].filter(function (v) { return v && !yearly.test(v) && !once.test(v); });
+        if (bad.length) { return 'Pick both a month and a day, or a full date.'; }
+        var invalidDay = [from, to].filter(function (v) {
+            var m = yearly.exec(v) ? v.split('-') : null;
+            return m && (parseInt(m[1], 10) > DAYS_IN_MONTH[parseInt(m[0], 10) - 1] || parseInt(m[1], 10) < 1);
+        });
+        if (invalidDay.length) { return describeDate(invalidDay[0]).split(' ')[0] + ' doesn\'t have that many days.'; }
+        if (once.test(from) && once.test(to) && from > to) { return 'The start date is after the end date.'; }
+        return null;
+    }
+    function validateCondition(c) {
+        var k = KINDS[c.Kind];
+        if (!k) { return 'unknown condition; remove it.'; }
+        if (k.type === 'list' || k.type === 'idlist' || k.type === 'checks') { return (c.Values || []).length ? null : 'choose at least ' + k.noun + '.'; }
+        if (k.type === 'date') { return validateDates(c, false); }
+        if (k.type === 'range') {
+            if (!c.From && !c.To) { return 'fill in at least one of From and To.'; }
+            if (k.unit === 'time') {
+                var t = /^([01]?\d|2[0-3]):[0-5]\d$/;
+                if ((c.From && !t.test(c.From)) || (c.To && !t.test(c.To))) { return 'use a time such as 22:00.'; }
+                return null;
+            }
+            var f = c.From === '' ? null : Number(c.From), to = c.To === '' ? null : Number(c.To);
+            var okNum = function (n) { return n === null || (Math.floor(n) === n && n >= k.min && n <= k.max); };
+            if (!okNum(f) || !okNum(to)) { return 'use a whole number from ' + k.min + ' to ' + k.max + '.'; }
+            if (k.unit === 'year' && f !== null && to !== null && f > to) { return 'the first year is after the last year.'; }
+        }
+        return null;
+    }
+
+    function conditionEditor(c, onRemove) {
+        var k = KINDS[c.Kind] || { label: c.Kind, type: 'list' };
+        var body = el('div');
+        var box = el('div', { cls: 'li-cond' },
+            el('div', { cls: 'li-row', style: 'align-items:center' },
+                el('strong', { text: k.label }),
+                el('select', { 'aria-label': 'is or is not', onchange: function (e) { c.Negate = e.target.value === 'not'; } },
+                    el('option', { value: 'is', text: k.type === 'date' || k.type === 'range' ? 'is within' : 'is', selected: !c.Negate }),
+                    el('option', { value: 'not', text: k.type === 'date' || k.type === 'range' ? 'is outside' : 'is not', selected: !!c.Negate })),
+                el('button', { type: 'button', cls: 'li-btn small', text: 'Remove', onclick: onRemove })),
+            body);
+        c.Values = c.Values || [];
+
+        if (k.type === 'list' || k.type === 'idlist') {
+            var chips = el('div', { cls: 'li-chips' });
+            var label = function (v) { return k.type === 'idlist' ? nameOf(k.source, v) : v; };
+            var hint = el('div', { cls: 'li-hint' });
+            var drawChips = function () {
+                clear(chips);
+                if (c.Values.length === 0) { chips.appendChild(el('span', { cls: 'li-muted', text: 'Nothing chosen yet.' })); }
+                c.Values.forEach(function (v, vi) {
+                    chips.appendChild(el('span', { cls: 'li-chip' }, label(v), el('button', { type: 'button', title: 'Remove', 'aria-label': 'Remove ' + label(v), text: '×', onclick: function () { c.Values.splice(vi, 1); drawChips(); } })));
+                });
+            };
+            var addValue = function (v) {
+                v = (v || '').trim();
+                if (!v) { return; }
+                if (c.Values.map(function (x) { return x.toLowerCase(); }).indexOf(v.toLowerCase()) >= 0) { hint.textContent = '"' + label(v) + '" is already chosen.'; return; }
+                var known = k.source && k.type === 'list' ? lists[k.source] : null;
+                hint.textContent = known && known.length && !known.some(function (x) { return x.toLowerCase() === v.toLowerCase(); }) ? 'Note: no title in your library has "' + v + '" yet. Check the spelling.' : '';
+                c.Values.push(v); drawChips();
+            };
+            drawChips();
+            body.appendChild(chips);
+            if (k.type === 'idlist') {
+                body.appendChild(el('select', {
+                    'aria-label': 'Add ' + k.noun,
+                    onchange: function (e) { addValue(e.target.value); e.target.value = ''; }
+                }, el('option', { value: '', text: lists[k.source].length ? 'Add ' + k.noun + '…' : 'None in your library' }), lists[k.source].map(function (o) { return el('option', { value: o.id, text: o.name }); })));
+            } else {
+                var listId = 'liDl' + Math.random().toString(36).slice(2);
+                var input = el('input', { type: 'text', list: listId, placeholder: k.source ? 'Type or pick ' + k.noun + ', then press Enter' : 'Type a name, then press Enter', onkeydown: function (e) { if (e.key === 'Enter') { e.preventDefault(); addValue(input.value); input.value = ''; } } });
+                body.appendChild(el('div', { cls: 'li-row' },
+                    el('label', {}, input),
+                    el('label', { cls: 'li-inline' }, el('button', { type: 'button', cls: 'li-btn small', text: 'Add', onclick: function () { addValue(input.value); input.value = ''; } }))));
+                body.appendChild(el('datalist', { id: listId }, (k.source ? lists[k.source] : []).map(function (v) { return el('option', { value: v }); })));
+            }
+            body.appendChild(hint);
+        } else if (k.type === 'checks') {
+            body.appendChild(el('div', { cls: 'li-checks' }, k.options.map(function (o) {
+                return el('label', {}, el('input', {
+                    type: 'checkbox', checked: c.Values.indexOf(o[0]) >= 0, onchange: function (e) {
+                        c.Values = c.Values.filter(function (x) { return x !== o[0]; });
+                        if (e.target.checked) { c.Values.push(o[0]); }
+                    }
+                }), o[1]);
+            })));
+        } else if (k.type === 'date') {
+            body.appendChild(dateEditor(c));
+        } else if (k.type === 'range') {
+            var ph = k.placeholder || ['', ''];
+            body.appendChild(el('div', { cls: 'li-row' },
+                el('label', {}, 'From', el('input', { type: k.input, min: k.min, max: k.max, value: c.From, placeholder: ph[0], oninput: function (e) { c.From = e.target.value; } })),
+                el('label', {}, 'To', el('input', { type: k.input, min: k.min, max: k.max, value: c.To, placeholder: ph[1], oninput: function (e) { c.To = e.target.value; } }))));
+            if (c.Kind === 'TimeOfDay') { body.appendChild(el('p', { cls: 'li-hint', text: 'Can cross midnight, e.g. 22:00 to 02:00. The end time itself is not included. Uses the server\'s clock.' })); }
+            if (c.Kind === 'DayOfMonth') { body.appendChild(el('p', { cls: 'li-hint', text: 'Can wrap, e.g. 28 to 3. Leave one side empty for no limit.' })); }
+            if (c.Kind === 'ProductionYear') { body.appendChild(el('p', { cls: 'li-hint', text: 'Both years included. Leave one side empty for no limit, e.g. From 2000 = 2000 and later.' })); }
+        }
+        return box;
+    }
+
+    // Yearly dates are stored as "MM-dd", one-off dates as "yyyy-MM-dd". With allowNone, "Any time" clears both.
+    function dateEditor(c, allowNone) {
+        var mode = (!c.From && !c.To) ? (allowNone ? 'none' : 'yearly') : (/^\d{4}-/.test(c.From || '') || /^\d{4}-/.test(c.To || '') ? 'once' : 'yearly');
+        var host = el('div');
+        function draw() {
+            clear(host);
+            host.appendChild(el('div', { cls: 'li-row' },
+                el('label', {}, allowNone ? 'When' : 'Repeats', el('select', {
+                    onchange: function (e) { mode = e.target.value; c.From = ''; c.To = ''; draw(); }
+                }, allowNone ? el('option', { value: 'none', text: 'Any time', selected: mode === 'none' }) : null,
+                    el('option', { value: 'yearly', text: 'Every year', selected: mode === 'yearly' }), el('option', { value: 'once', text: 'Specific dates', selected: mode === 'once' })))));
+            if (mode === 'yearly') {
+                host.appendChild(el('div', { cls: 'li-row' }, monthDay('From', 'From'), monthDay('To', 'To')));
+                host.appendChild(el('p', { cls: 'li-hint', text: 'Both days are included. A range can cross the new year, e.g. Dec 20 to Jan 5.' }));
+            } else if (mode === 'once') {
+                host.appendChild(el('div', { cls: 'li-row' },
+                    el('label', {}, 'From', el('input', { type: 'date', value: (c.From || '').substring(0, 10), oninput: function (e) { c.From = e.target.value; } })),
+                    el('label', {}, 'To', el('input', { type: 'date', value: (c.To || '').substring(0, 10), oninput: function (e) { c.To = e.target.value; } }))));
+            }
+        }
+        function monthDay(label, field) {
+            var m = /^(\d{2})-(\d{2})$/.exec(c[field] || '') || [null, '', ''];
+            var month = el('select', { 'aria-label': label + ' month' }, el('option', { value: '', text: 'Month' }), MONTHS.map(function (n, i) { var v = ('0' + (i + 1)).slice(-2); return el('option', { value: v, text: n, selected: v === m[1] }); }));
+            var day = el('input', { type: 'number', min: 1, max: 31, value: m[2] ? parseInt(m[2], 10) : '', placeholder: 'Day', 'aria-label': label + ' day', style: 'width:5em' });
+            function update() {
+                var d = parseInt(day.value, 10);
+                if (!month.value && !day.value) { c[field] = ''; return; }
+                c[field] = month.value && d >= 1 ? month.value + '-' + ('0' + d).slice(-2) : 'incomplete';
+            }
+            month.addEventListener('change', update);
+            day.addEventListener('input', update);
+            return el('label', {}, label, el('span', { style: 'display:flex;gap:.4em' }, month, day));
+        }
+        draw();
+        return host;
+    }
+
+    // ---------- pre-show ----------
+    function renderSteps() {
+        if (!config) { return; }
+        var host = clear($('liSteps'));
+        if (config.PreShow.length === 0) { host.appendChild(el('p', { cls: 'li-muted', text: 'No steps: one rule pick is used. Add steps to build your own pre-show.' })); }
+        config.PreShow.forEach(function (s, i) {
+            var body = el('div');
+            var change = function () { markDirty(); };
+            var head = el('div', { cls: 'li-row', style: 'align-items:center' },
+                el('strong', { text: (i + 1) + '. ' + (STEP_LABELS[s.Kind] || s.Kind) }),
+                el('label', { cls: 'li-inline' }, el('input', { type: 'checkbox', checked: s.Enabled, onchange: function (e) { s.Enabled = e.target.checked; change(); renderSteps(); } }), 'On'),
+                el('span', { style: 'flex:1' }),
+                el('button', { type: 'button', cls: 'li-btn small', text: '↑', title: 'Move up', 'aria-label': 'Move step up', disabled: i === 0, onclick: function () { move(i, -1); } }),
+                el('button', { type: 'button', cls: 'li-btn small', text: '↓', title: 'Move down', 'aria-label': 'Move step down', disabled: i === config.PreShow.length - 1, onclick: function () { move(i, 1); } }),
+                el('button', { type: 'button', cls: 'li-btn small danger', text: 'Remove', onclick: function () { config.PreShow.splice(i, 1); change(); renderSteps(); } }));
+
+            if (s.Kind === 'Rules' || s.Kind === 'Trailers') {
+                var count = el('input', { type: 'number', min: 1, max: 10, step: 1, value: s.Count, 'data-min': '1', 'data-max': '10', oninput: function (e) { var n = checkNumber(e.target); s.Count = n !== null ? n : NaN; change(); } });
+                body.appendChild(el('div', { cls: 'li-row' },
+                    el('label', {}, s.Kind === 'Rules' ? 'How many pre-rolls (1–10)' : 'How many trailers (1–10)', count),
+                    s.Kind === 'Rules'
+                        ? el('label', {}, 'Rule group', el('input', { type: 'text', maxlength: '50', value: s.Group || '', placeholder: 'Empty = normal rules', oninput: function (e) { s.Group = e.target.value.trim(); change(); } }), el('span', { cls: 'li-hint', text: 'Only change this if you gave some rules a group.' }))
+                        : el('label', { cls: 'li-inline' }, el('input', { type: 'checkbox', checked: s.SameGenre, onchange: function (e) { s.SameGenre = e.target.checked; change(); } }), 'Prefer trailers of the same genre')));
+            }
+            if (s.Kind === 'Fixed') {
+                body.appendChild(el('p', { cls: 'li-hint', text: 'These play every time, in the order of their file names.' }));
+                body.appendChild(introPicker(s.Intros, function (v) { s.Intros = v; change(); }, false));
+            }
+            var all = s.ApplyTo.length === 0;
+            body.appendChild(el('div', { style: 'margin-top:.5em' }, el('span', { cls: 'li-muted', text: 'Play this step before: ' }),
+                el('span', { cls: 'li-checks', style: 'display:inline-flex' }, ITEM_TYPES.map(function (t) {
+                    return el('label', {}, el('input', {
+                        type: 'checkbox', checked: all || s.ApplyTo.indexOf(t[0]) >= 0, 'data-applyto': t[0], onchange: function (e) {
+                            var current = s.ApplyTo.length === 0 ? ITEM_TYPES.map(function (x) { return x[0]; }) : s.ApplyTo.slice();
+                            current = current.filter(function (x) { return x !== t[0]; });
+                            if (e.target.checked) { current.push(t[0]); }
+                            if (current.length === 0) { e.target.checked = true; notice('A step must play before at least one kind of video. To stop it, untick "On" instead.'); return; }
+                            s.ApplyTo = current.length === ITEM_TYPES.length ? [] : current;
+                            change();
+                        }
+                    }), t[1]);
+                }))));
+            host.appendChild(el('div', { cls: 'li-card' + (s.Enabled ? '' : ' li-off'), 'data-step': s.Kind }, head, body));
+        });
+    }
+    function move(i, d) { var s = config.PreShow.splice(i, 1)[0]; config.PreShow.splice(i + d, 0, s); markDirty(); renderSteps(); }
+    Array.prototype.forEach.call(page.querySelectorAll('[data-addstep]'), function (b) {
+        b.addEventListener('click', function () {
+            config.PreShow.push({ Kind: b.getAttribute('data-addstep'), Enabled: true, Count: 1, Group: '', Intros: [], SameGenre: true, ApplyTo: b.getAttribute('data-addstep') === 'Trailers' ? ['Movie'] : [] });
+            markDirty(); renderSteps();
+        });
+    });
+
+    // ---------- playback ----------
+    function renderPlayback() {
+        var types = clear($('liItemTypes'));
+        ITEM_TYPES.forEach(function (t) {
+            types.appendChild(el('label', {}, el('input', {
+                type: 'checkbox', checked: config.EnabledItemTypes.indexOf(t[0]) >= 0, 'data-type': t[0], onchange: function (e) {
+                    config.EnabledItemTypes = config.EnabledItemTypes.filter(function (x) { return x !== t[0]; });
+                    if (e.target.checked) { config.EnabledItemTypes.push(t[0]); }
+                    markDirty();
+                }
+            }), t[1]));
+        });
+        $('liSelectionMode').value = config.SelectionMode || 'WeightedRandom';
+        $('liAvoidRepeat').value = config.AvoidRepeatCount;
+        $('liBoostDays').value = config.BoostNewDays;
+        $('liBoostFactor').value = config.BoostNewFactor;
+        $('liAgeSafe').checked = !!config.AgeSafe;
+        $('liAgeUnrated').value = String(!!config.AgeSafeUnratedAllowAll);
+        $('liAgeUnrated').disabled = !config.AgeSafe;
+        $('liTitleEnabled').checked = !!config.TitleIntrosEnabled;
+        $('liTitleFolder').value = config.TitleFolderName || '.prerolls';
+        $('liTitleMode').value = config.TitleIntrosMode || 'Replace';
+        $('liTitleFolder').disabled = $('liTitleMode').disabled = !config.TitleIntrosEnabled;
+        $('liOptOutTag').value = config.OptOutTag || '';
+        $('liMinMinutes').value = config.MinMinutesBetweenIntros;
+        $('liEpisodeMode').value = config.EpisodeMode || 'EveryEpisode';
+        $('liBingeGap').value = config.BingeGapMinutes;
+        $('liBingeGapWrap').style.display = config.EpisodeMode === 'FirstOfBinge' ? '' : 'none';
+        $('liConvert').checked = !!config.ConvertProblemFiles;
+        $('liLevel').checked = !!config.LevelLoudness;
+        $('liTargetLufs').value = config.TargetLoudness;
+        Array.prototype.forEach.call(page.querySelectorAll('input[data-field]'), function (i) { setFieldError(i, null); });
+        renderOptOuts();
+        var users = clear($('liExcludedUsers'));
+        var excluded = config.ExcludedUserIds.map(normId);
+        lists.users.forEach(function (u) {
+            users.appendChild(el('label', {}, el('input', {
+                type: 'checkbox', checked: excluded.indexOf(normId(u.id)) >= 0, 'data-user': u.name, onchange: function (e) {
+                    config.ExcludedUserIds = config.ExcludedUserIds.filter(function (x) { return normId(x) !== normId(u.id); });
+                    if (e.target.checked) { config.ExcludedUserIds.push(u.id); }
+                    markDirty();
+                }
+            }), u.name));
+        });
+    }
+    // Numbers: validate as you type; only valid values reach the settings.
+    Array.prototype.forEach.call(page.querySelectorAll('input[data-field]'), function (input) {
+        input.addEventListener('input', function () {
+            var n = checkNumber(input);
+            if (n !== null) { config[input.dataset.field] = n; }
+            markDirty();
+        });
+    });
+    function bindCheck(id, field, after) { $(id).addEventListener('change', function (e) { config[field] = e.target.checked; markDirty(); if (after) { after(); } }); }
+    function bindText(id, field) { $(id).addEventListener('input', function (e) { config[field] = e.target.value.trim(); markDirty(); }); }
+    bindCheck('liAgeSafe', 'AgeSafe', function () { $('liAgeUnrated').disabled = !config.AgeSafe; });
+    bindCheck('liTitleEnabled', 'TitleIntrosEnabled', function () { $('liTitleFolder').disabled = $('liTitleMode').disabled = !config.TitleIntrosEnabled; });
+    bindCheck('liConvert', 'ConvertProblemFiles');
+    bindCheck('liLevel', 'LevelLoudness');
+    bindText('liOptOutTag', 'OptOutTag');
+    $('liTitleFolder').addEventListener('input', function (e) {
+        config.TitleFolderName = e.target.value.trim();
+        setFieldError(e.target, safeFolderName(e.target.value) ? null : 'Use a plain folder name, such as .prerolls, without slashes.');
+        markDirty();
+    });
+    $('liAgeUnrated').addEventListener('change', function (e) { config.AgeSafeUnratedAllowAll = e.target.value === 'true'; markDirty(); });
+    $('liTitleMode').addEventListener('change', function (e) { config.TitleIntrosMode = e.target.value; markDirty(); });
+    $('liSelectionMode').addEventListener('change', function (e) { config.SelectionMode = e.target.value; markDirty(); });
+    $('liEpisodeMode').addEventListener('change', function (e) { config.EpisodeMode = e.target.value; markDirty(); $('liBingeGapWrap').style.display = config.EpisodeMode === 'FirstOfBinge' ? '' : 'none'; });
+
+    // Opt-out list
+    function loadOptOutNames() {
+        if (!config.OptOutItemIds.length) { return Promise.resolve(); }
+        return ApiClient.getItems(ApiClient.getCurrentUserId(), { Ids: config.OptOutItemIds.join(','), Recursive: true }).then(function (r) {
+            (r.Items || []).forEach(function (it) { optOutNames[normId(it.Id)] = itemLabel(it); });
+            renderOptOuts();
+        }, function () { });
+    }
+    function itemLabel(it) {
+        if (it.Type === 'Episode') { return it.SeriesName + ' – S' + (it.ParentIndexNumber || 0) + 'E' + (it.IndexNumber || 0) + ' ' + it.Name; }
+        if (it.Type === 'Season') { return (it.SeriesName || '') + ' – ' + it.Name; }
+        return it.Name + (it.ProductionYear ? ' (' + it.ProductionYear + ')' : '');
+    }
+    function renderOptOuts() {
+        var host = clear($('liOptOutChips'));
+        if (!config.OptOutItemIds.length) { host.appendChild(el('span', { cls: 'li-muted', text: 'None yet.' })); }
+        config.OptOutItemIds.forEach(function (id, i) {
+            var name = optOutNames[normId(id)] || 'A title that is no longer in your library';
+            host.appendChild(el('span', { cls: 'li-chip' }, name, el('button', { type: 'button', text: '×', title: 'Remove', 'aria-label': 'Remove ' + name, onclick: function () { config.OptOutItemIds.splice(i, 1); markDirty(); renderOptOuts(); } })));
+        });
+    }
+    var optTimer = null;
+    $('liOptOutSearch').addEventListener('input', function (e) {
+        clearTimeout(optTimer);
+        var term = e.target.value.trim();
+        var sel = $('liOptOutResults');
+        if (term.length < 2) { clear(sel).appendChild(el('option', { value: '', text: 'Search first' })); return; }
+        optTimer = setTimeout(function () {
+            ApiClient.getItems(ApiClient.getCurrentUserId(), { SearchTerm: term, IncludeItemTypes: 'Movie,Series,Season,Episode,MusicVideo,Video', Recursive: true, Limit: 25, Fields: 'ProductionYear' }).then(function (r) {
+                clear(sel).appendChild(el('option', { value: '', text: (r.Items || []).length ? (r.Items.length + ' found. Pick one to add it…') : 'Nothing found for "' + term + '"' }));
+                (r.Items || []).forEach(function (it) { optOutNames[normId(it.Id)] = itemLabel(it); sel.appendChild(el('option', { value: it.Id, text: itemLabel(it) + ' · ' + it.Type })); });
+            });
+        }, 300);
+    });
+    $('liOptOutResults').addEventListener('change', function (e) {
+        var id = e.target.value;
+        if (!id) { return; }
+        if (config.OptOutItemIds.map(normId).indexOf(normId(id)) >= 0) { notice('"' + optOutNames[normId(id)] + '" is already on the list.'); }
+        else { config.OptOutItemIds.push(id); markDirty(); renderOptOuts(); }
+        e.target.value = '';
+    });
+
+    // ---------- catalog ----------
+    function renderCatalogSettings() {
+        $('liAutoSync').checked = !!config.CatalogAutoSync;
+        $('liCatFolder').value = config.CatalogDownloadFolder || '';
+        $('liCatPerCategory').checked = !!config.CatalogFolderPerCategory;
+        renderSubs();
+    }
+    bindCheck('liAutoSync', 'CatalogAutoSync');
+    bindCheck('liCatPerCategory', 'CatalogFolderPerCategory');
+    $('liCatFolder').addEventListener('input', function (e) { config.CatalogDownloadFolder = e.target.value.trim(); setFieldError(e.target, null); markDirty(); });
+
+    function loadTraffic() {
+        apiGet(API + 'Status').then(function (s) {
+            var t = s.Catalog || {};
+            var parts = ['prerolls.me requests since the server started: ' + (t.CatalogFetches || 0) + ' catalog, ' + (t.ThumbnailFetches || 0) + ' thumbnail, ' + (t.Downloads || 0) + ' download.'];
+            if (s.CatalogFetchedUtc) { parts.push('Catalog loaded ' + new Date(s.CatalogFetchedUtc).toLocaleString() + '; it refreshes at most once an hour.'); }
+            $('liCatTraffic').textContent = parts.join(' ');
+        }, function () { });
+    }
+
+    var catRequest = 0;
+    function loadCatalog() {
+        var my = ++catRequest;
+        var params = {
+            q: $('liCatQ').value.trim() || undefined,
+            platform: $('liCatPlatform').value || undefined,
+            category: $('liCatCategory').value || undefined,
+            tag: $('liCatTag').value || undefined,
+            sort: $('liCatSort').value,
+            downloadableOnly: $('liCatDownloadable').checked,
+            page: catPage,
+            limit: 24
+        };
+        $('liCatInfo').textContent = 'Loading…';
+        return apiGet(API + 'Catalog', params).then(function (d) {
+            if (my !== catRequest) { return; } // A newer search finished first.
+            if (catMeta.categories.length === 0) {
+                catMeta.categories = d.Categories || [];
+                catMeta.tags = d.Tags || [];
+                fillSelect($('liCatCategory'), 'All categories', catMeta.categories);
+                fillSelect($('liCatTag'), 'All tags', catMeta.tags);
+                fillSubValues();
+                renderSubs();
+            }
+            $('liCatInfo').textContent = d.Total + ' pre-roll' + (d.Total === 1 ? '' : 's') + (d.GeneratedAt ? ' · catalog updated ' + new Date(d.GeneratedAt).toLocaleDateString() : '');
+            $('liCatFolderInfo').textContent = d.DownloadFolderError ? '⚠ ' + d.DownloadFolderError : 'Downloads go to: ' + d.DownloadFolder + ($('liCatPerCategory').checked ? '/<category>' : '');
+            $('liCatFolderInfo').className = d.DownloadFolderError ? 'li-bad li-help' : 'li-muted li-help';
+            renderCatalog(d);
+            loadTraffic();
+        }, function (err) {
+            if (my !== catRequest) { return; }
+            $('liCatInfo').textContent = '';
+            return errorText(err).then(function (t) { clear($('liCatGrid')).appendChild(el('p', { cls: 'li-bad', role: 'alert', text: t })); });
+        });
+    }
+    function fillSelect(sel, first, items) {
+        var cur = sel.value;
+        clear(sel).appendChild(el('option', { value: '', text: first }));
+        items.forEach(function (c) { sel.appendChild(el('option', { value: c.Slug, text: c.Name + (c.Count ? ' (' + c.Count + ')' : ''), selected: c.Slug === cur })); });
+    }
+    function renderCatalog(d) {
+        var grid = clear($('liCatGrid'));
+        if (!d.Items.length) { grid.appendChild(el('p', { cls: 'li-muted', text: 'Nothing matches. Try fewer words or clear a filter.' })); }
+        d.Items.forEach(function (p) {
+            var thumb = el('div', { cls: 'li-thumb', role: 'img', 'aria-label': p.Title, style: 'background-image:url("' + ApiClient.getUrl(API + 'Catalog/Thumb/' + encodeURIComponent(p.Id), { ApiKey: ApiClient.accessToken() }) + '")' },
+                p.DurationSeconds ? el('span', { text: fmtDur(p.DurationSeconds) }) : null);
+            var actions = el('div', { cls: 'li-actions' });
+            if (p.IsDownloadable) {
+                var btn = el('button', {
+                    type: 'button', cls: 'li-btn small ' + (p.OnDisk ? '' : 'primary'), text: p.OnDisk ? 'Downloaded ✓' : (p.Downloaded ? 'Download again' : 'Download'), disabled: p.OnDisk,
+                    title: p.Downloaded && !p.OnDisk ? 'You downloaded this before and deleted it. Subscriptions won\'t bring it back, but you can download it again here.' : null,
+                    onclick: function () {
+                        if (config.IntroFolders.length === 0) { notice('Add a pre-roll folder on the Files tab and save first. Downloads are saved there.'); return; }
+                        btn.disabled = true; btn.textContent = 'Downloading…';
+                        apiPost(API + 'Catalog/Download/' + encodeURIComponent(p.Slug)).then(function (r) {
+                            if (r.Ok) { btn.textContent = 'Downloaded ✓'; btn.className = 'li-btn small'; loadTraffic(); } else { btn.disabled = false; btn.textContent = 'Download'; notice('Could not download "' + p.Title + '": ' + r.Message); }
+                        }, function (err) { btn.disabled = false; btn.textContent = 'Download'; return showError('Could not download "' + p.Title + '".', err); });
+                    }
+                });
+                actions.appendChild(btn);
+                if (p.PreviewUrl) {
+                    actions.appendChild(el('button', {
+                        type: 'button', cls: 'li-btn small', text: 'Preview', onclick: function () {
+                            var v = el('video', { controls: 'controls', autoplay: 'autoplay', src: p.PreviewUrl, style: 'width:100%' });
+                            v.addEventListener('error', function () { v.replaceWith(el('div', { cls: 'li-warn', text: 'The preview could not be played in this browser.' })); });
+                            thumb.replaceWith(v);
+                        }
+                    }));
+                }
+            } else {
+                actions.appendChild(el('a', { cls: 'li-btn small', href: p.Url, target: '_blank', rel: 'noopener', text: 'Open on prerolls.me' }));
+                actions.appendChild(el('span', { cls: 'li-hint', text: 'Hosted on ' + (p.Source === 'youtube' ? 'YouTube' : p.Source === 'vimeo' ? 'Vimeo' : p.Source) + ', so it can\'t be downloaded here.' }));
+            }
+            grid.appendChild(el('div', { cls: 'li-tile' }, thumb,
+                el('div', { cls: 'li-body' },
+                    el('strong', {}, el('a', { href: p.Url, target: '_blank', rel: 'noopener', style: 'color:inherit;text-decoration:none', text: p.Title })),
+                    el('div', { cls: 'li-muted', text: [p.Category, p.Resolution, (p.Platforms || []).join('/')].filter(Boolean).join(' · ') }),
+                    p.Credit ? el('div', { cls: 'li-muted', text: 'By ' + p.Credit }) : null,
+                    actions)));
+        });
+        var pager = clear($('liCatPager'));
+        if (d.Pages > 1) {
+            pager.appendChild(el('button', { type: 'button', cls: 'li-btn small', text: '‹ Previous', disabled: d.Page <= 1, onclick: function () { catPage--; loadCatalog(); } }));
+            pager.appendChild(el('span', { cls: 'li-muted', text: 'Page ' + d.Page + ' of ' + d.Pages }));
+            pager.appendChild(el('button', { type: 'button', cls: 'li-btn small', text: 'Next ›', disabled: d.Page >= d.Pages, onclick: function () { catPage++; loadCatalog(); } }));
+        }
+    }
+    var catTimer = null;
+    $('liCatQ').addEventListener('input', function () { clearTimeout(catTimer); catTimer = setTimeout(function () { catPage = 1; loadCatalog(); }, 350); });
+    ['liCatPlatform', 'liCatCategory', 'liCatTag', 'liCatSort', 'liCatDownloadable'].forEach(function (id) { $(id).addEventListener('change', function () { catPage = 1; loadCatalog(); }); });
+
+    function fillSubValues() {
+        var items = $('liSubKind').value === 'tag' ? catMeta.tags : catMeta.categories;
+        var sel = clear($('liSubValue'));
+        sel.appendChild(el('option', { value: '', text: items.length ? 'Choose…' : 'Catalog not loaded' }));
+        items.forEach(function (c) { sel.appendChild(el('option', { value: c.Slug, text: c.Name + (c.Count ? ' (' + c.Count + ')' : '') })); });
+    }
+    $('liSubKind').addEventListener('change', fillSubValues);
+    function subLabel(s) {
+        var items = s.Kind === 'tag' ? catMeta.tags : catMeta.categories;
+        var hit = items.filter(function (x) { return x.Slug === s.Value; })[0];
+        return (s.Kind === 'tag' ? 'Tag: ' : 'Category: ') + (hit ? hit.Name : s.Value) + (s.Platform ? ' (' + s.Platform + ' only)' : '');
+    }
+    function renderSubs() {
+        var host = clear($('liSubs'));
+        if (!config.CatalogSubscriptions.length) { host.appendChild(el('p', { cls: 'li-muted', text: 'Not following anything yet.' })); return; }
+        config.CatalogSubscriptions.forEach(function (s, i) {
+            host.appendChild(el('div', { cls: 'li-row', style: 'align-items:center;margin:.3em 0', 'data-sub': s.Kind + ':' + s.Value },
+                el('label', { cls: 'li-inline' }, el('input', { type: 'checkbox', checked: s.Enabled, title: 'Untick to pause', onchange: function (e) { s.Enabled = e.target.checked; markDirty(); } }), subLabel(s)),
+                el('button', { type: 'button', cls: 'li-btn small danger', text: 'Unfollow', onclick: function () { config.CatalogSubscriptions.splice(i, 1); markDirty(); renderSubs(); } })));
+        });
+    }
+    $('liSubAdd').addEventListener('click', function () {
+        var value = $('liSubValue').value, kind = $('liSubKind').value, platform = $('liSubPlatform').value;
+        var err = $('liSubError');
+        if (!value) { err.textContent = 'Choose a ' + kind + ' to follow first.'; return; }
+        if (config.CatalogSubscriptions.some(function (s) { return s.Kind === kind && s.Value === value && (s.Platform || '') === platform; })) { err.textContent = 'You already follow that.'; return; }
+        err.textContent = '';
+        config.CatalogSubscriptions.push({ Kind: kind, Value: value, Platform: platform, Enabled: true });
+        markDirty(); renderSubs();
+    });
+    $('liSyncNow').addEventListener('click', function () {
+        if (!config.CatalogSubscriptions.some(function (s) { return s.Enabled; })) { $('liSyncStatus').textContent = 'Follow a category or tag first.'; return; }
+        $('liSyncStatus').textContent = 'Syncing… this can take a minute.';
+        $('liSyncNow').disabled = true;
+        save(true).then(function (ok) {
+            if (!ok) { $('liSyncStatus').textContent = ''; return null; }
+            return apiPost(API + 'Catalog/Sync').then(function (r) {
+                var msg = r.Downloaded ? 'Downloaded ' + r.Downloaded + ' new pre-roll' + (r.Downloaded === 1 ? '' : 's') + '.' : 'Up to date. Nothing new to download.';
+                if (r.MoreLater) { msg += ' More will follow in the next hourly check.'; }
+                if (r.Failed && r.Failed.length) { msg += ' Problems: ' + r.Failed.join('; '); }
+                $('liSyncStatus').textContent = msg;
+                loadCatalog();
+            });
+        }).then(null, function (err) { return errorText(err).then(function (t) { $('liSyncStatus').textContent = t; }); })
+            .then(function () { $('liSyncNow').disabled = false; });
+    });
+
+    // ---------- test ----------
+    function renderTestOptions() {
+        var sel = clear($('liTestUser'));
+        sel.appendChild(el('option', { value: '', text: '(no viewer)' }));
+        lists.users.forEach(function (u) { sel.appendChild(el('option', { value: u.id, text: u.name, selected: u.id === ApiClient.getCurrentUserId() })); });
+        var now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        if (!$('liTestAt').value) { $('liTestAt').value = now.toISOString().substring(0, 16); }
+    }
+    function updateTestNote() {
+        var n = $('liTestNote');
+        clear(n);
+        if (dirty) {
+            n.appendChild(document.createTextNode('You have unsaved changes, and the test uses the saved settings. '));
+            n.appendChild(el('button', { type: 'button', cls: 'li-link', text: 'Save now', onclick: function () { save(false); } }));
+        }
+    }
+    var searchTimer = null;
+    $('liTestSearch').addEventListener('input', function (e) {
+        clearTimeout(searchTimer);
+        var term = e.target.value.trim();
+        var sel = $('liTestItem');
+        if (term.length < 2) { clear(sel).appendChild(el('option', { value: '', text: 'Search first' })); return; }
+        searchTimer = setTimeout(function () {
+            ApiClient.getItems(ApiClient.getCurrentUserId(), { SearchTerm: term, IncludeItemTypes: 'Movie,Episode,MusicVideo,Video', Recursive: true, Limit: 25, Fields: 'ProductionYear' }).then(function (r) {
+                clear(sel);
+                (r.Items || []).forEach(function (it) { sel.appendChild(el('option', { value: it.Id, text: itemLabel(it) + ' · ' + it.Type })); });
+                if (!r.Items || r.Items.length === 0) { sel.appendChild(el('option', { value: '', text: 'Nothing found for "' + term + '"' })); }
+            });
+        }, 300);
+    });
+    $('liTestRun').addEventListener('click', function () {
+        var itemId = $('liTestItem').value;
+        if (!itemId) { setFieldError($('liTestSearch'), 'Search for a movie or episode, then pick it in Title.'); return; }
+        setFieldError($('liTestSearch'), null);
+        if (!$('liTestAt').value) { setFieldError($('liTestAt'), 'Pick a date and time.'); return; }
+        setFieldError($('liTestAt'), null);
+        apiGet(API + 'Simulate', { itemId: itemId, userId: $('liTestUser').value || undefined, at: $('liTestAt').value }).then(renderTestResult, function (err) {
+            return errorText(err).then(function (t) { clear($('liTestResult')).appendChild(el('div', { cls: 'li-card li-errorbox', role: 'alert', text: 'The test could not run: ' + t })); });
+        });
+    });
+
+    function renderTestResult(d) {
+        var host = clear($('liTestResult'));
+        var verdict = el('div', { cls: 'li-card' }, el('h3', { text: d.Item.Name + ' · ' + d.Item.Type }), el('div', { cls: 'li-muted', text: (d.User ? 'Viewer ' + d.User + ', ' : 'No viewer, ') + d.At }));
+        if (d.Intros && d.Intros.length) {
+            verdict.appendChild(el('p', { cls: 'li-good', text: 'Plays before the title:' }));
+            verdict.appendChild(el('ol', {}, d.Intros.map(function (p) { return el('li', { text: p.Name + ' (' + (STEP_LABELS[p.Source] || p.Source) + (p.Prepared ? ', compatible copy' : '') + ')' }); })));
+            verdict.appendChild(el('p', { cls: 'li-hint', text: 'With random selection, running the test again can pick differently.' }));
+        } else {
+            verdict.appendChild(el('p', { cls: 'li-bad', text: 'Nothing plays. ' + (d.SkipReason || '') }));
+        }
+        if (d.TitleIntros && d.TitleIntros.length) { verdict.appendChild(el('p', { text: 'This title has its own pre-rolls: ' + d.TitleIntros.join(', ') })); }
+        host.appendChild(verdict);
+
+        if (d.Excluded && d.Excluded.length) {
+            host.appendChild(el('div', { cls: 'li-card' }, el('h3', { text: 'Left out before the rules ran' }),
+                el('table', { cls: 'li-table' }, el('tbody', {}, d.Excluded.map(function (x) { return el('tr', {}, el('td', { text: x.Name }), el('td', { cls: 'li-muted', text: x.Reason })); })))));
+        }
+        if (d.Facts) {
+            host.appendChild(el('div', { cls: 'li-card' }, el('h3', { text: 'What the rules see' }),
+                el('table', { cls: 'li-table' }, el('tbody', {}, Object.keys(d.Facts).map(function (k) { return el('tr', {}, el('th', { text: k }), el('td', { text: d.Facts[k] || '–' })); })))));
+        }
+        (d.Steps || []).forEach(function (s) {
+            var card = el('div', { cls: 'li-card' }, el('h3', { text: (s.Index ? 'Step ' + s.Index + ': ' : '') + (STEP_LABELS[s.Kind] || s.Kind) }));
+            if (s.Note) { card.appendChild(el('p', { cls: 'li-muted', text: s.Note })); }
+            if (s.Picked && s.Picked.length) { card.appendChild(el('p', { text: 'Picked: ' + s.Picked.join(', ') })); }
+            if (s.Rules && s.Rules.length) {
+                card.appendChild(el('div', { cls: 'li-scroll' }, el('table', { cls: 'li-table' },
+                    el('thead', {}, el('tr', {}, el('th', { text: 'Rule' }), el('th', { text: 'Matches?' }), el('th', { text: 'Priority' }), el('th', { text: 'Pre-rolls found' }), el('th', { text: 'Used' }))),
+                    el('tbody', {}, s.Rules.map(function (r) {
+                        return el('tr', { cls: r.Matched ? '' : 'li-off' },
+                            el('td', { text: r.RuleName }),
+                            el('td', { cls: r.Matched ? 'li-good' : '', text: r.Matched ? 'yes' : 'no' }),
+                            el('td', { text: r.Precedence > 1e9 ? 'top' : String(r.Precedence) }),
+                            el('td', { text: r.Matched ? String(r.AvailableIntros) : '–' }),
+                            el('td', { text: r.Used ? '✓' : '' }));
+                    })))));
+            }
+            if (s.Candidates && s.Candidates.length) {
+                card.appendChild(el('h3', { style: 'margin-top:1em', text: 'Chances' }));
+                card.appendChild(el('table', { cls: 'li-table' }, el('tbody', {}, s.Candidates.map(function (c) {
+                    return el('tr', {}, el('td', { text: c.Name }), el('td', { text: Math.round(c.Probability * 100) + '%' }),
+                        el('td', { cls: 'li-muted', text: (c.RecentlyPlayed ? 'seen recently, skipped if possible' : '') }));
+                }))));
+            }
+            host.appendChild(card);
+        });
+    }
+
+    // ---------- backup ----------
+    var EXPORT_FIELDS = ['IntroFolders', 'ScanSubfolders', 'VideoExtensions', 'Rules', 'PreShow', 'EnabledItemTypes', 'SelectionMode', 'AvoidRepeatCount', 'MinMinutesBetweenIntros', 'EpisodeMode', 'BingeGapMinutes', 'ExcludedUserIds',
+        'FileSettings', 'AgeSafe', 'AgeSafeUnratedAllowAll', 'BoostNewDays', 'BoostNewFactor', 'TitleIntrosEnabled', 'TitleFolderName', 'TitleIntrosMode', 'OptOutItemIds', 'OptOutTag',
+        'ConvertProblemFiles', 'LevelLoudness', 'TargetLoudness', 'CatalogEnabled', 'CatalogDownloadFolder', 'CatalogFolderPerCategory', 'CatalogAutoSync', 'CatalogSubscriptions'];
+    var ARRAY_FIELDS = ['IntroFolders', 'Rules', 'PreShow', 'EnabledItemTypes', 'ExcludedUserIds', 'FileSettings', 'OptOutItemIds', 'CatalogSubscriptions'];
+    $('liExport').addEventListener('click', function () {
+        readFolders();
+        var out = { LocalPrerollsProExport: 1 };
+        EXPORT_FIELDS.forEach(function (k) { out[k] = config[k]; });
+        var blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+        var a = el('a', { href: URL.createObjectURL(blob), download: 'local-prerolls-pro-settings.json' });
+        document.body.appendChild(a); a.click(); a.parentNode.removeChild(a);
+    });
+    $('liImportFile').addEventListener('change', function (e) {
+        var f = e.target.files && e.target.files[0];
+        if (!f) { return; }
+        if (f.size > 5 * 1024 * 1024) { $('liRestoreError').textContent = 'That file is too large to be a settings backup.'; return; }
+        f.text().then(function (t) { $('liImportText').value = t; $('liRestoreError').textContent = ''; });
+    });
+    $('liImport').addEventListener('click', function () {
+        var err = $('liRestoreError');
+        var text = $('liImportText').value.trim();
+        if (!text) { err.textContent = 'Choose a settings file or paste its contents first.'; return; }
+        var data;
+        try { data = JSON.parse(text); } catch (e) { err.textContent = 'This isn\'t a settings backup: the text is not valid JSON. Paste the whole contents of the downloaded file, from the first { to the last }.'; return; }
+        if (!data || typeof data !== 'object' || Array.isArray(data) || !Array.isArray(data.Rules)) { err.textContent = 'This isn\'t a Local Pre-Rolls Pro backup (it has no list of rules). Use a file made with "Download settings".'; return; }
+        var wrong = ARRAY_FIELDS.filter(function (k) { return data[k] !== undefined && !Array.isArray(data[k]); });
+        if (wrong.length) { err.textContent = 'The backup looks damaged: ' + wrong.join(', ') + ' should be a list.'; return; }
+        if (!confirm('Replace the settings on this page with the backup? Nothing is saved until you click Save.')) { return; }
+        err.textContent = '';
+        EXPORT_FIELDS.forEach(function (k) { if (data[k] !== undefined) { config[k] = data[k]; } });
+        normalizeConfig();
+        editing = null; editingFile = null;
+        renderAll();
+        markDirty();
+        $('liImportText').value = '';
+        $('liImportFile').value = '';
+        notice('Backup loaded. Check the tabs, then click Save to keep these settings.');
+    });
+
+    // ---------- save ----------
+    // Resolves true when saved, false when validation stopped it.
+    function save(quiet) {
+        var problems = validateAll();
+        showErrors(problems);
+        if (problems.length) { return Promise.resolve(false); }
+        readFolders();
+        return ApiClient.updatePluginConfiguration(PLUGIN_ID, config).then(function (result) {
+            markClean();
+            if (!quiet && window.Dashboard) { Dashboard.processPluginConfigurationUpdateResult(result); }
+            return ApiClient.getPluginConfiguration(PLUGIN_ID).then(function (saved) {
+                // The server tidies values on save (e.g. file types); show what was stored.
+                config = saved; normalizeConfig(); renderFolders(); renderPlayback(); renderCatalogSettings();
+                return true;
+            });
+        }, function (err) { return showError('Your settings were not saved.', err).then(function () { return false; }); });
+    }
+    Array.prototype.forEach.call(page.querySelectorAll('[data-save]'), function (b) {
+        b.addEventListener('click', function () {
+            loading(true);
+            save(false).then(function (ok) { if (ok) { setTimeout(loadFiles, 3000); } })
+                .then(function () { loading(false); });
+        });
+    });
+    $('liDiscard').addEventListener('click', function () {
+        if (!confirm('Throw away your unsaved changes?')) { return; }
+        load();
+    });
+
+    page.addEventListener('pageshow', function () { if (!config || !dirty) { load(); } });
+    page.addEventListener('viewshow', function () { if (!config) { load(); } });
+    if (window.ApiClient && page.offsetParent !== null && !config) { setTimeout(function () { if (!config) { load(); } }, 0); }
+})();
+</script>
+</div>
+</body>
+</html>

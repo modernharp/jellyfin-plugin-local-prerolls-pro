@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Jellyfin.Plugin.LocalPrerollsPro/Jellyfin.Plugin.LocalPrerollsPro.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Jellyfin.Plugin.LocalPrerollsPro.Tests/Jellyfin.Plugin.LocalPrerollsPro.Tests.csproj" />
+  </Folder>
+</Solution>

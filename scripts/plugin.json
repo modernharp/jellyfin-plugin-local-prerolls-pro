@@ -1,0 +1,9 @@
+{
+  "guid": "d18a3ff6-9bbb-4218-9158-c9d2642eee86",
+  "name": "Local Pre-Rolls Pro",
+  "owner": "modernharp",
+  "category": "General",
+  "targetAbi": "12.0.0.0",
+  "overview": "Cinema-style pre-rolls from your own folders and prerolls.me, chosen by rules",
+  "description": "Plays pre-roll videos before movies and episodes. Rules by genre, rating, resolution, HDR, audio, date, viewer and more; per-title pre-rolls; age-safe selection; automatic conversion and loudness levelling; and a built-in prerolls.me catalog with subscriptions."
+}
