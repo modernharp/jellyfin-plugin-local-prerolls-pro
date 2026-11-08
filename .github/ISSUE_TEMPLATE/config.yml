@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Install guide
+    url: https://github.com/modernharp/jellyfin-plugin-local-prerolls-pro/blob/main/docs/INSTALL.md
+    about: Step-by-step install with pictures.
+  - name: Questions and answers
+    url: https://github.com/modernharp/jellyfin-plugin-local-prerolls-pro/blob/main/docs/FAQ.md
+    about: Nothing plays? Stuck after the pre-roll? Start here.
